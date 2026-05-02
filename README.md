@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Thibitisha - Job Advert Verification Tool
 
 A web application to verify job adverts against Kenyan scam patterns and protect users from fake jobs and trafficking.
@@ -51,3 +52,6 @@ Then open your browser to `http://localhost:8000`
 - IBM Watson Text-to-Speech
 - IBM Watson Natural Language Understanding
 - IBM Cloudant NoSQL Database
+=======
+# thibitisha
+>>>>>>> d3ff576c272778addceee1621ba6cefe3fad27bd
