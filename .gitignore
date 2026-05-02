@@ -1,0 +1,5 @@
+# Configuration files with real API keys
+config.js
+
+# Keep config.example.js in the repo as a template
+!config.example.js
