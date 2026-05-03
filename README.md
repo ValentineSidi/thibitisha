@@ -32,11 +32,12 @@ Martin's story is not unique. **Thousands of Kenyan youth** face similar exploit
 
 Thibitisha empowers job seekers to **verify before they trust**. Using advanced AI analysis, our tool:
 
-✅ **Analyzes job adverts** for scam patterns and red flags  
-✅ **Extracts text from images** (screenshots, photos of flyers)  
-✅ **Provides instant risk assessment** with detailed explanations  
-✅ **Enables anonymous reporting** to build community intelligence  
-✅ **Offers accessibility features** including text-to-speech  
+✅ **Analyzes job adverts** for scam patterns and red flags
+✅ **Extracts text from images** (screenshots, photos of flyers)
+✅ **Provides instant risk assessment** with detailed explanations
+✅ **AI Scam Advisor chat** for real-time questions and guidance
+✅ **Enables anonymous reporting** to build community intelligence
+✅ **Offers accessibility features** including text-to-speech
 
 ---
 
@@ -48,11 +49,22 @@ Thibitisha is built entirely on **IBM's cutting-edge AI and cloud technologies**
 Our entire application was developed in collaboration with IBM Bob, an AI-powered development assistant that accelerated our build process and ensured best practices throughout.
 
 ### 🧠 **IBM Watson Natural Language Understanding (NLU)**
-Powers our core scam detection engine by analyzing:
+Powers our core scam detection engine AND the new AI Scam Advisor chat by analyzing:
 - Sentiment and emotional manipulation tactics
 - Entity extraction (companies, locations, contact details)
 - Keyword analysis for common scam indicators
 - Semantic patterns in fraudulent job postings
+- Real-time emotion detection for contextual responses
+- User intent classification for personalized advice
+
+### 💬 **AI Scam Advisor Chat (NEW!)**
+Interactive AI-powered chat assistant using IBM Watson NLU:
+- Floating chat button for instant help
+- Context-aware responses based on sentiment analysis
+- Bilingual support (English & Swahili)
+- Specialized knowledge about job scams, red flags, and safety tips
+- Emotional intelligence to provide supportive guidance
+- Real-time analysis of user questions
 
 ### 🔊 **IBM Watson Text-to-Speech**
 Provides accessibility for visually impaired users and those with reading difficulties, ensuring everyone can protect themselves from scams.
@@ -63,13 +75,6 @@ Stores anonymized scam reports to build **community intelligence**:
 - Real-time synchronization across regions
 - Privacy-preserving architecture for sensitive data
 - Enables pattern recognition across reported scams
-
-### 🔗 **IBM watsonx Orchestrate**
-Powers our **Scam Reporting Agent** workflow:
-- Automated scam report processing
-- Intelligent routing and categorization
-- Integration with community alert systems
-- Streamlined incident response
 
 ---
 
@@ -95,7 +100,7 @@ Powers our **Scam Reporting Agent** workflow:
 
 3. **Add your IBM API keys to `config.js`:**
    - IBM Watson Text-to-Speech API key and URL
-   - IBM Watson Natural Language Understanding API key and URL
+   - IBM Watson Natural Language Understanding API key and URL (powers both main analysis AND AI chat)
    - IBM Cloudant URL, API key, and database name
 
 4. **Start local web server:**

@@ -12,10 +12,12 @@
    ============================================ */
 
 // IBM Text-to-Speech Configuration
+// Used for: Accessibility features (read results aloud)
 const IBM_TTS_API_KEY = 'YOUR_IBM_TTS_API_KEY_HERE';
-const IBM_TTS_URL = 'https://api.us-south.text-to-speech.watson.cloud.ibm.com/instances/YOUR_INSTANCE_ID/v1/synthesize';
+const IBM_TTS_URL = 'https://api.us-south.text-to-speech.watson.cloud.ibm.com/instances/YOUR_INSTANCE_ID';
 
 // IBM Watson Natural Language Understanding Configuration
+// Used for: Main scam analysis AND AI Scam Advisor chat
 const IBM_NLU_CONFIG = {
     apiKey: 'YOUR_IBM_WATSON_NLU_API_KEY_HERE',
     url: 'YOUR_IBM_WATSON_NLU_URL_HERE', // e.g., https://api.us-south.natural-language-understanding.watson.cloud.ibm.com
