@@ -1817,8 +1817,15 @@ Protect yourself from scams & trafficking.`;
                     return;
                 }
             } else {
-                if (!extractedText || extractedText.length < 20) {
+                // Check if a file has been selected
+                if (!fileInput.files || fileInput.files.length === 0) {
                     showError('image', 'Pakia picha kwanza / Upload an image first');
+                    return;
+                }
+                
+                // Check if text was successfully extracted
+                if (!extractedText || extractedText.length < 20) {
+                    showError('image', 'Maandishi hayaonekani vizuri. Jaribu picha nyingine / Text not clear. Try another image');
                     return;
                 }
                 textToAnalyze = extractedText;
