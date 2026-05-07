@@ -856,7 +856,7 @@
                 <div class="brand-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
-                        <path d="M9 12L11 14L15 10" style="stroke: var(--bg);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 12L11 14L15 10" stroke="var(--bg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="hero-copy">
@@ -968,7 +968,7 @@
             <button class="primary-button" id="verify-btn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
-                    <path d="M9 12L11 14L15 10" style="stroke: var(--bg);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 12L11 14L15 10" stroke="var(--bg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Verify now
             </button>
@@ -1000,7 +1000,7 @@
 
             <div class="result-actions">
                 <div class="tooltip-wrap" data-tooltip="Read the latest result aloud">
-                    <button class="tts-button" id="tts-button" type="button" aria-label="Read the latest result aloud">
+                    <button class="tts-button" id="tts-button" type="button" aria-label="Read the latest result aloud" aria-live="polite">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1149,32 +1149,32 @@
 
         const riskPatterns = [
             {
-                regex: /\b(pay|send|deposit|fee|processing|registration|visa|medical|clearance|security|training)\b.{0,30}\b(fee|money|payment|ksh|kes|mpesa|m-pesa|cash)\b/gi,
+                regex: /\b(pay|send|deposit|fee|processing|registration|visa|medical|clearance|security|training)\b.{0,30}\b(fee|money|payment|ksh|kes|mpesa|m-pesa|cash)\b/i,
                 label: 'The advert asks for money before a verified hiring process.',
                 weight: 3
             },
             {
-                regex: /\b(whatsapp|telegram)\b.{0,20}\b(only|direct|immediately|now|urgent|asap)\b/gi,
+                regex: /\b(whatsapp|telegram)\b.{0,20}\b(only|direct|immediately|now|urgent|asap)\b/i,
                 label: 'It pushes the conversation to informal messaging channels right away.',
                 weight: 2
             },
             {
-                regex: /\b(no experience|anyone can apply|everyone welcome|immediate start|quick money|easy money|guaranteed job|100% hired)\b/gi,
+                regex: /\b(no experience|anyone can apply|everyone welcome|immediate start|quick money|easy money|guaranteed job|100% hired)\b/i,
                 label: 'It makes promises that sound too easy or guaranteed.',
                 weight: 2
             },
             {
-                regex: /\b(dubai|qatar|saudi|oman|kuwait|uae|overseas|abroad|middle east)\b/gi,
+                regex: /\b(dubai|qatar|saudi|oman|kuwait|uae|overseas|abroad|middle east)\b/i,
                 label: 'It mentions overseas placement, which should always be verified through official agencies.',
                 weight: 2
             },
             {
-                regex: /\b(id|passport|certificate|national id|bank|mpesa|paybill|till)\b.{0,24}\b(copy|scan|photo|picture|details|number)\b/gi,
+                regex: /\b(id|passport|certificate|national id|bank|mpesa|paybill|till)\b.{0,24}\b(copy|scan|photo|picture|details|number)\b/i,
                 label: 'It asks for personal documents or payment details early.',
                 weight: 2
             },
             {
-                regex: /\b(hurry|act now|limited slots|last chance|today only|few positions|urgent)\b/gi,
+                regex: /\b(hurry|act now|limited slots|last chance|today only|few positions|urgent)\b/i,
                 label: 'It uses pressure language to make you act quickly.',
                 weight: 1
             }
@@ -1219,6 +1219,9 @@
             chatInput: document.getElementById('chat-input'),
             chatSend: document.getElementById('chat-send')
         };
+        const filePillIconMarkup = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        const findingIconMarkup = color => '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2L2 20H22L12 2Z" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M12 9V13" stroke="' + color + '" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="' + color + '"/></svg>';
+        const ttsButtonDefaultHTML = elements.ttsButton.innerHTML;
 
         function setTab(tab) {
             state.currentTab = tab;
@@ -1255,7 +1258,10 @@
                 return;
             }
             elements.filePill.style.display = 'inline-flex';
-            elements.filePill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>' + file.name + '</span>';
+            elements.filePill.innerHTML = filePillIconMarkup;
+            const fileName = document.createElement('span');
+            fileName.textContent = file.name;
+            elements.filePill.appendChild(fileName);
         }
 
         async function handleFileUpload(file) {
@@ -1362,7 +1368,6 @@
             let score = 0;
 
             riskPatterns.forEach(pattern => {
-                pattern.regex.lastIndex = 0;
                 if (pattern.regex.test(text)) {
                     findings.push({ label: pattern.label, weight: pattern.weight });
                     score += pattern.weight;
@@ -1412,7 +1417,10 @@
                 const color = getRiskColor(analysis.riskLevel);
                 analysis.findings.forEach(text => {
                     const item = document.createElement('li');
-                    item.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2L2 20H22L12 2Z" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M12 9V13" stroke="' + color + '" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="' + color + '"/></svg><span>' + text + '</span>';
+                    item.innerHTML = findingIconMarkup(color);
+                    const label = document.createElement('span');
+                    label.textContent = text;
+                    item.appendChild(label);
                     elements.findingsList.appendChild(item);
                 });
             } else {
@@ -1439,6 +1447,7 @@
             const spokenText = meta.badge + '. ' + meta.message + ' ' + findingsText;
 
             elements.ttsButton.disabled = true;
+            elements.ttsButton.setAttribute('aria-busy', 'true');
             elements.ttsButton.innerHTML = '<span class="spinner" aria-hidden="true"></span>Preparing audio';
 
             try {
@@ -1468,7 +1477,8 @@
                 console.error('TTS error:', error);
             } finally {
                 elements.ttsButton.disabled = false;
-                elements.ttsButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Listen to this result';
+                elements.ttsButton.setAttribute('aria-busy', 'false');
+                elements.ttsButton.innerHTML = ttsButtonDefaultHTML;
             }
         }
 
