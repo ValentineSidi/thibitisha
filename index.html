@@ -856,7 +856,7 @@
                 <div class="brand-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
-                        <path d="M9 12L11 14L15 10" stroke="#081229" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 12L11 14L15 10" style="stroke: var(--bg);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <div class="hero-copy">
@@ -968,7 +968,7 @@
             <button class="primary-button" id="verify-btn" type="button">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
-                    <path d="M9 12L11 14L15 10" stroke="#081229" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 12L11 14L15 10" style="stroke: var(--bg);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Verify now
             </button>
@@ -1350,16 +1350,23 @@
             return Array.from(new Set(flags.map(item => item.label)));
         }
 
+        function getRiskColor(riskLevel) {
+            const styles = getComputedStyle(document.documentElement);
+            if (riskLevel === 'safe') return styles.getPropertyValue('--green').trim();
+            if (riskLevel === 'caution') return styles.getPropertyValue('--amber').trim();
+            return styles.getPropertyValue('--red').trim();
+        }
+
         async function analyzeJobAdvert(text) {
             const findings = [];
             let score = 0;
 
             riskPatterns.forEach(pattern => {
+                pattern.regex.lastIndex = 0;
                 if (pattern.regex.test(text)) {
                     findings.push({ label: pattern.label, weight: pattern.weight });
                     score += pattern.weight;
                 }
-                pattern.regex.lastIndex = 0;
             });
 
             const nlu = await analyzeWithIBMNLU(text);
@@ -1402,8 +1409,8 @@
             elements.emptyFindings.textContent = '';
 
             if (analysis.findings.length) {
+                const color = getRiskColor(analysis.riskLevel);
                 analysis.findings.forEach(text => {
-                    const color = analysis.riskLevel === 'safe' ? '#00c853' : analysis.riskLevel === 'caution' ? '#ffcf33' : '#ff6b57';
                     const item = document.createElement('li');
                     item.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2L2 20H22L12 2Z" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M12 9V13" stroke="' + color + '" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="' + color + '"/></svg><span>' + text + '</span>';
                     elements.findingsList.appendChild(item);
