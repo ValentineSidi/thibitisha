@@ -1,1546 +1,1324 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Thibitisha - Verify job adverts against Kenyan scam patterns. Protect yourself from fake jobs and trafficking.">
-    <title>Thibitisha - Verify Job Adverts</title>
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'></script>
-    <script src='config.js'></script>
+    <meta name="description" content="Thibitisha helps you verify job adverts, spot scam warning signs, and stay safe.">
+    <title>Thibitisha - Verify job adverts</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="config.js"></script>
     <style>
+        :root {
+            color-scheme: dark;
+            --bg: #081229;
+            --surface: #102145;
+            --surface-soft: rgba(255, 255, 255, 0.06);
+            --text: #f6fbff;
+            --muted: #bfd0f2;
+            --border: rgba(255, 255, 255, 0.14);
+            --green: #00c853;
+            --green-soft: rgba(0, 200, 83, 0.12);
+            --blue-soft: rgba(15, 98, 254, 0.12);
+            --amber: #ffcf33;
+            --amber-soft: rgba(255, 207, 51, 0.12);
+            --red: #ff6b57;
+            --red-soft: rgba(255, 107, 87, 0.12);
+            --shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+            --radius-lg: 28px;
+            --radius-md: 20px;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #0A0F2C;
-            color: #FFFFFF;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(15, 98, 254, 0.2), transparent 36%),
+                radial-gradient(circle at right, rgba(0, 200, 83, 0.16), transparent 24%),
+                var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-            position: relative;
+            line-height: 1.55;
+            padding: 24px 16px 112px;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(255, 255, 255, 0.02) 2px,
-                    rgba(255, 255, 255, 0.02) 4px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(255, 255, 255, 0.02) 2px,
-                    rgba(255, 255, 255, 0.02) 4px
-                );
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            margin-bottom: 50px;
-            padding: 40px 20px;
-        }
-
-        .hero-logo {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .hero-title {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            color: #FFFFFF;
-            margin-bottom: 15px;
-            letter-spacing: -1px;
-            text-shadow: 0 2px 20px rgba(0, 200, 83, 0.4);
-        }
-
-        .hero-tagline {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #00C853;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        .hero-description {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.8;
-            max-width: 600px;
-            margin: 0 auto 25px;
-            font-weight: 500;
-        }
-
-        .trust-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 200, 83, 0.1);
-            border: 2px solid #00C853;
-            border-radius: 20px;
-            padding: 10px 18px;
-            font-size: 0.9rem;
-            color: #FFFFFF;
-            font-weight: 600;
-        }
-
-        /* SVG Icons */
-        .icon {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            vertical-align: middle;
-        }
-
-        .icon-large {
-            width: 48px;
-            height: 48px;
-        }
-
-        .icon-xlarge {
-            width: 64px;
-            height: 64px;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid transparent;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 700;
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(0, 200, 83, 0.3);
-        }
-
-        .tab.active {
-            background: rgba(0, 200, 83, 0.15);
-            border-color: #00C853;
-            color: #00C853;
-        }
-
-        .tab-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Input Areas */
-        .input-section {
-            display: none;
-        }
-
-        .input-section.active {
-            display: block;
-        }
-
+        button,
+        input,
         textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #FFFFFF;
-            font-size: 1rem;
-            font-family: inherit;
-            resize: vertical;
-            transition: all 0.3s ease;
+            font: inherit;
         }
 
-        textarea:focus {
-            outline: none;
-            border-color: #00C853;
-            background: rgba(255, 255, 255, 0.08);
+        a {
+            color: inherit;
         }
 
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+        button:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        .tab:focus-visible,
+        .upload-area:focus-visible,
+        .chat-fab:focus-visible {
+            outline: 3px solid rgba(15, 98, 254, 0.9);
+            outline-offset: 3px;
         }
 
-        .file-upload-area {
-            border: 3px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.05);
+        .app-shell {
+            max-width: 1040px;
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
         }
 
-        .file-upload-area:hover {
-            border-color: #00C853;
-            background: rgba(0, 200, 83, 0.05);
+        .hero,
+        .scanner-card,
+        .result-panel,
+        .education-card,
+        .warning-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
         }
 
-        .file-upload-area.dragover {
-            border-color: #00C853;
-            background: rgba(0, 200, 83, 0.1);
+        .hero {
+            padding: 32px;
+            display: grid;
+            gap: 24px;
         }
 
-        .upload-icon-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .file-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(0, 200, 83, 0.1);
-            border-radius: 8px;
-            font-size: 0.9rem;
+        .brand {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 16px;
         }
 
-        /* OCR Progress */
-        .ocr-progress {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-        }
-
-        .ocr-progress.active {
-            display: block;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00C853, #00E676);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        /* Extracted Text Box */
-        .extracted-text {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-        }
-
-        .extracted-text.active {
-            display: block;
-        }
-
-        .extracted-text-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            cursor: pointer;
-            gap: 8px;
-        }
-
-        .extracted-text-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .extracted-text-content {
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .extracted-text-content.collapsed {
-            display: none;
-        }
-
-        /* Verify Button */
-        .verify-button {
-            width: 100%;
-            padding: 18px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #00C853, #00E676);
-            border: none;
-            border-radius: 12px;
-            color: #0A0F2C;
-            font-size: 1.2rem;
-            font-weight: 900;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .verify-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 200, 83, 0.5);
-        }
-
-        .verify-button:active {
-            transform: translateY(0);
-        }
-
-        .verify-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes countUp {
-            from { opacity: 0; transform: scale(0.5); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes dangerPulse {
-            0%, 100% { background: #0A0F1E; }
-            50% { background: rgba(255, 61, 0, 0.1); }
-        }
-
-        @keyframes safeGlow {
-            0%, 100% { box-shadow: 0 0 0 rgba(0, 200, 83, 0); }
-            50% { box-shadow: 0 0 30px rgba(0, 200, 83, 0.3); }
-        }
-
-        .pulse {
-            animation: pulse 0.5s ease 3;
-        }
-
-        .shake {
-            animation: shake 0.5s ease;
-        }
-
-        .spinning, .spin {
-            animation: spin 1s linear infinite;
-        }
-
-        /* Loading State */
-        .loading-state {
-            display: none;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .loading-state.active {
-            display: block;
-        }
-
-        .loading-shield-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        /* Results */
-        .results {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .results.active {
-            display: block;
-            animation: slideIn 0.5s ease;
-        }
-
-        .score-circle {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: bold;
-            border: 8px solid;
-            animation: countUp 1.5s ease;
-        }
-
-        .score-circle.danger {
-            border-color: #FF3D00;
-            background: rgba(255, 61, 0, 0.1);
-            color: #FF3D00;
-        }
-
-        .score-circle.caution {
-            border-color: #FFD600;
-            background: rgba(255, 214, 0, 0.1);
-            color: #FFD600;
-        }
-
-        .score-circle.safe {
-            border-color: #00C853;
-            background: rgba(0, 200, 83, 0.1);
-            color: #00C853;
-        }
-
-        .score-label {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: 900;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .score-label.danger { color: #FF3D00; }
-        .score-label.caution { color: #FFD600; }
-        .score-label.safe { color: #00C853; }
-
-        .red-flags {
-            margin-bottom: 30px;
-        }
-
-        .red-flag-item {
-            padding: 15px;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 4px solid #FF3D00;
-            border-radius: 8px;
-            opacity: 0;
-            animation: slideIn 0.5s ease forwards;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .red-flag-item:nth-child(2) { animation-delay: 0.3s; }
-        .red-flag-item:nth-child(3) { animation-delay: 0.6s; }
-        .red-flag-item:nth-child(4) { animation-delay: 0.9s; }
-
-        .red-flag-icon {
+        .brand-mark {
+            width: 72px;
+            height: 72px;
+            border-radius: 22px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(0, 200, 83, 0.22), rgba(15, 98, 254, 0.18));
+            color: var(--green);
             flex-shrink: 0;
         }
 
-        .verdict {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            margin-bottom: 20px;
-            line-height: 1.8;
-            font-weight: 500;
+        .brand-mark svg {
+            width: 40px;
+            height: 40px;
         }
 
-        .tts-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #00C853 0%, #00E676 100%);
-            border: none;
-            border-radius: 12px;
-            color: #0A0F2C;
+        .hero-copy h1 {
+            font-size: clamp(2.4rem, 7vw, 4rem);
+            line-height: 1;
+            letter-spacing: -0.05em;
+            margin-bottom: 10px;
+        }
+
+        .hero-copy .subtitle {
+            color: #d8ffe8;
+            font-size: clamp(1rem, 2vw, 1.2rem);
             font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .hero-copy p {
+            max-width: 62ch;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .how-it-works {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .step-card {
+            padding: 18px 14px;
+            border-radius: var(--radius-md);
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            text-align: center;
+            display: grid;
+            gap: 10px;
+            justify-items: center;
+        }
+
+        .step-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: var(--blue-soft);
+            color: #8fc5ff;
+        }
+
+        .step-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .step-card span {
+            font-weight: 700;
+        }
+
+        .scanner-card {
+            padding: 28px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .card-heading h2 {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+
+        .card-heading p,
+        .helper-text,
+        .upload-note,
+        .ocr-status,
+        .result-footnote,
+        .empty-findings,
+        .chat-hint,
+        .education-card p,
+        .warning-card p {
+            color: var(--muted);
+        }
+
+        .trust-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: var(--green-soft);
+            color: #d7ffe4;
+            border: 1px solid rgba(0, 200, 83, 0.2);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .tab {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            padding: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+            cursor: pointer;
+            min-height: 68px;
+            transition: 0.2s ease;
+            font-weight: 700;
         }
 
-        .tts-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 200, 83, 0.4);
+        .tab svg,
+        .chat-fab svg,
+        .chat-send svg,
+        .tts-button svg,
+        .report-button svg,
+        .reset-button svg,
+        .primary-button svg,
+        .secondary-button svg,
+        .link-button svg {
+            width: 20px;
+            height: 20px;
         }
 
-        .tts-button:active {
-            transform: translateY(0);
+        .tab.active {
+            border-color: rgba(0, 200, 83, 0.45);
+            background: rgba(0, 200, 83, 0.14);
+            color: #d7ffe4;
         }
 
-        .tts-button:disabled {
+        .tab:not(.active):hover,
+        .secondary-button:hover,
+        .link-button:hover,
+        .upload-area:hover,
+        .chat-send:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .input-panel {
+            display: none;
+            gap: 14px;
+        }
+
+        .input-panel.active {
+            display: grid;
+        }
+
+        label {
+            font-weight: 700;
+            font-size: 0.98rem;
+        }
+
+        textarea,
+        .chat-input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: var(--radius-md);
+            background: rgba(4, 15, 37, 0.62);
+            color: var(--text);
+        }
+
+        textarea {
+            min-height: 220px;
+            padding: 18px;
+            resize: vertical;
+        }
+
+        textarea::placeholder,
+        .chat-input::placeholder {
+            color: #8fa7d0;
+        }
+
+        .upload-area {
+            padding: 28px;
+            border-radius: var(--radius-md);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            background: rgba(4, 15, 37, 0.44);
+            display: grid;
+            gap: 12px;
+            justify-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s ease;
+            min-height: 220px;
+            align-content: center;
+        }
+
+        .upload-area.dragover {
+            border-color: rgba(0, 200, 83, 0.7);
+            background: rgba(0, 200, 83, 0.08);
+        }
+
+        .upload-area svg {
+            width: 44px;
+            height: 44px;
+            color: #d9f5ff;
+        }
+
+        .upload-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .file-pill {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            border-radius: 999px;
+            background: var(--blue-soft);
+            border: 1px solid rgba(15, 98, 254, 0.24);
+            width: fit-content;
+        }
+
+        .ocr-progress,
+        .loading-state,
+        .error-box,
+        .report-confirmation,
+        .result-panel,
+        .report-button,
+        .tts-button,
+        .reset-button {
+            display: none;
+        }
+
+        .ocr-progress.active,
+        .loading-state.active,
+        .error-box.active,
+        .report-confirmation.active,
+        .result-panel.active,
+        .report-button.show,
+        .tts-button.show,
+        .reset-button.show {
+            display: flex;
+        }
+
+        .ocr-progress,
+        .loading-state,
+        .error-box,
+        .report-confirmation {
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+            background: rgba(4, 15, 37, 0.6);
+            align-items: center;
+            gap: 12px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--green), #3fe58b);
+            transition: width 0.2s ease;
+        }
+
+        .primary-button,
+        .secondary-button,
+        .link-button,
+        .tts-button,
+        .report-button,
+        .reset-button,
+        .chat-send,
+        .chat-fab {
+            border: none;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .primary-button,
+        .secondary-button,
+        .link-button,
+        .tts-button,
+        .report-button,
+        .reset-button {
+            display: flex;
+            width: 100%;
+            min-height: 60px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .primary-button {
+            background: linear-gradient(135deg, var(--green), #22e271);
+            color: #062113;
+            font-size: 1.12rem;
+            box-shadow: 0 16px 28px rgba(0, 200, 83, 0.25);
+        }
+
+        .primary-button:disabled,
+        .chat-send:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
-        .tts-button .speaker-icon {
-            width: 24px;
-            height: 24px;
-            animation: none;
-        }
-
-        .tts-button.playing .speaker-icon {
-            animation: pulse 1s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .danger-warning {
-            display: none;
-            padding: 20px;
-            background: rgba(255, 61, 0, 0.2);
-            border: 2px solid #FF3D00;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-weight: 900;
-            text-align: center;
-            line-height: 1.8;
-        }
-
-        .danger-warning.active {
-            display: block;
-        }
-
-        .warning-icon-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-
-        .action-buttons {
-            display: grid;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .action-button {
-            padding: 15px;
+        .secondary-button,
+        .link-button,
+        .tts-button,
+        .reset-button {
             background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #FFFFFF;
-            text-decoration: none;
-            text-align: center;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .report-button {
+            background: rgba(255, 107, 87, 0.12);
+            color: #ffe2dd;
+            border: 1px solid rgba(255, 107, 87, 0.26);
+            display: none;
+        }
+
+        .result-panel {
+            padding: 28px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .verdict-card {
+            display: grid;
+            gap: 18px;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid transparent;
+            background: rgba(4, 15, 37, 0.62);
+        }
+
+        .verdict-card.safe {
+            border-color: rgba(0, 200, 83, 0.25);
+            background: linear-gradient(180deg, rgba(0, 200, 83, 0.12), rgba(4, 15, 37, 0.72));
+        }
+
+        .verdict-card.caution {
+            border-color: rgba(255, 207, 51, 0.3);
+            background: linear-gradient(180deg, rgba(255, 207, 51, 0.12), rgba(4, 15, 37, 0.72));
+        }
+
+        .verdict-card.danger {
+            border-color: rgba(255, 107, 87, 0.3);
+            background: linear-gradient(180deg, rgba(255, 107, 87, 0.12), rgba(4, 15, 37, 0.72));
+        }
+
+        .verdict-head {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .action-button:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #00C853;
-            transform: translateY(-2px);
-        }
-
-        .action-button.primary {
-            background: rgba(0, 200, 83, 0.15);
-            border-color: #00C853;
-        }
-
-        .tech-stack {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .tech-stack-title {
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .tech-badges {
-            display: flex;
+            gap: 14px;
             flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
         }
 
-        .tech-badge {
-            display: flex;
+        .verdict-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        .verdict-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .verdict-card.safe .verdict-icon {
+            color: var(--green);
+            background: var(--green-soft);
+        }
+
+        .verdict-card.caution .verdict-icon {
+            color: var(--amber);
+            background: var(--amber-soft);
+        }
+
+        .verdict-card.danger .verdict-icon {
+            color: var(--red);
+            background: var(--red-soft);
+        }
+
+        .verdict-copy h3 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 6px;
+        }
+
+        .verdict-badge {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 14px;
-            background: #0f62fe;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #FFFFFF;
-            transition: all 0.3s ease;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
         }
 
-        .tech-badge:hover {
-            background: #0353e9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3);
+        .verdict-card.safe .verdict-badge {
+            background: var(--green-soft);
+            color: #d7ffe4;
         }
 
-        .tech-badge svg {
-            width: 16px;
-            height: 16px;
+        .verdict-card.caution .verdict-badge {
+            background: var(--amber-soft);
+            color: #fff5c9;
         }
 
-        .reset-button {
-            width: 100%;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: #FFFFFF;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        .verdict-card.danger .verdict-badge {
+            background: var(--red-soft);
+            color: #ffe2dd;
         }
 
-        .reset-button:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #00C853;
-        }
-
-        /* Error Messages */
-        .error-message {
-            display: none;
-            padding: 15px;
-            margin-top: 15px;
-            background: rgba(255, 61, 0, 0.1);
-            border: 1px solid #FF3D00;
-            border-radius: 8px;
-            color: #FF3D00;
-            font-weight: 600;
-        }
-
-        .error-message.active {
-            display: block;
-            animation: shake 0.5s ease;
-        }
-
-        /* Usage Limit */
-        .usage-limit {
-            display: none;
+        .findings-card {
             padding: 20px;
-            margin-top: 20px;
-            background: rgba(255, 214, 0, 0.1);
-            border: 2px solid #FFD600;
-            border-radius: 12px;
-            text-align: center;
-            font-weight: 600;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
         }
 
-        .usage-limit.active {
-            display: block;
+        .findings-card h4 {
+            margin-bottom: 12px;
+            font-size: 1rem;
         }
 
-        .usage-icon-wrapper {
+        .findings-list,
+        .checklist,
+        .warning-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+        }
+
+        .findings-list li,
+        .checklist li,
+        .warning-list li {
             display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
+            gap: 12px;
+            align-items: flex-start;
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            body {
-                padding: 15px;
-            }
-
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .hero-tagline {
-                font-size: 1.1rem;
-            }
-
-            .hero-description {
-                font-size: 1rem;
-            }
-
-            .score-circle {
-                width: 120px;
-                height: 120px;
-                font-size: 2.5rem;
-            }
-
-            .verify-button {
-                position: sticky;
-                bottom: 15px;
-                z-index: 100;
-            }
+        .findings-list svg {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
         }
 
-        /* Dark mode safe colors */
-        ::selection {
-            background: #00C853;
-            color: #0A0F2C;
+        .result-actions {
+            display: grid;
+            gap: 12px;
         }
 
-        /* AI Chat Button */
-        .ai-chat-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #00C853 0%, #00E676 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 200, 83, 0.4);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            border: none;
+        .result-actions-grid,
+        .education-grid {
+            display: grid;
+            gap: 24px;
         }
 
-        .ai-chat-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(0, 200, 83, 0.6);
+        .result-actions-grid,
+        .education-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .ai-chat-button svg {
-            width: 35px;
-            height: 35px;
-            fill: #0A0F2C;
+        .education-card,
+        .warning-card {
+            padding: 26px;
         }
 
-        .ai-chat-button-label {
+        .education-card h2,
+        .warning-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .checklist .bullet,
+        .warning-list .bullet {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            margin-top: 1px;
+        }
+
+        .checklist .bullet {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .warning-list .bullet {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+
+        .error-box {
+            color: #ffe2dd;
+            border-color: rgba(255, 107, 87, 0.3);
+            background: rgba(255, 107, 87, 0.12);
+        }
+
+        .loading-state,
+        .report-confirmation {
+            color: #d7ffe4;
+            border-color: rgba(0, 200, 83, 0.22);
+            background: rgba(0, 200, 83, 0.1);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--green);
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .tooltip-wrap {
+            position: relative;
+        }
+
+        .tooltip-wrap::after {
+            content: attr(data-tooltip);
             position: absolute;
-            bottom: -25px;
             left: 50%;
+            bottom: calc(100% + 10px);
             transform: translateX(-50%);
-            background: rgba(0, 200, 83, 0.9);
-            color: #FFFFFF;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            background: #0d1d3d;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 0.82rem;
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.3s ease;
             pointer-events: none;
+            transition: opacity 0.2s ease;
+            border: 1px solid var(--border);
         }
 
-        .ai-chat-button:hover .ai-chat-button-label {
+        .tooltip-wrap:hover::after,
+        .tooltip-wrap:focus-within::after {
             opacity: 1;
         }
 
-        /* AI Chat Modal */
-        .ai-chat-modal {
-            display: none;
+        .chat-fab {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 15, 44, 0.95);
-            z-index: 2000;
+            right: 18px;
+            bottom: 18px;
+            z-index: 40;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .ai-chat-modal.active {
-            display: flex;
-        }
-
-        .ai-chat-container {
-            background: #1A1F3A;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(0, 200, 83, 0.3);
-            overflow: hidden;
-        }
-
-        .ai-chat-header {
-            background: linear-gradient(135deg, #00C853 0%, #00E676 100%);
-            color: #0A0F2C;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .ai-chat-header-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .ai-chat-close {
-            background: rgba(10, 15, 44, 0.2);
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .ai-chat-close:hover {
-            background: rgba(10, 15, 44, 0.4);
-            transform: rotate(90deg);
-        }
-
-        .ai-chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .ai-message {
-            padding: 15px 20px;
-            border-radius: 15px;
-            max-width: 85%;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .ai-message.user {
-            background: rgba(0, 200, 83, 0.2);
-            border: 1px solid rgba(0, 200, 83, 0.3);
-            align-self: flex-end;
-            color: #FFFFFF;
-        }
-
-        .ai-message.assistant {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            align-self: flex-start;
-            color: #FFFFFF;
-        }
-
-        .ai-message.assistant.warning {
-            border-left: 4px solid #FF6B6B;
-        }
-
-        .ai-message.assistant.safe {
-            border-left: 4px solid #00C853;
-        }
-
-        .ai-message-loading {
-            display: flex;
-            gap: 8px;
-            padding: 15px 20px;
-        }
-
-        .ai-message-loading span {
-            width: 8px;
-            height: 8px;
-            background: #00C853;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-
-        .ai-message-loading span:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-
-        .ai-message-loading span:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
-        }
-
-        .ai-chat-input-area {
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .ai-chat-input-wrapper {
-            display: flex;
             gap: 10px;
-            align-items: center;
+            background: linear-gradient(135deg, var(--green), #23df71);
+            color: #062113;
+            min-height: 62px;
+            padding: 0 18px;
+            border-radius: 999px;
+            font-weight: 800;
+            box-shadow: 0 18px 40px rgba(0, 200, 83, 0.28);
         }
 
-        .ai-chat-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            padding: 12px 20px;
-            color: #FFFFFF;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .ai-chat-input:focus {
-            border-color: #00C853;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .ai-chat-send {
-            background: linear-gradient(135deg, #00C853 0%, #00E676 100%);
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
+        .chat-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 10, 24, 0.72);
+            backdrop-filter: blur(8px);
+            display: none;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            padding: 18px;
+            z-index: 45;
         }
 
-        .ai-chat-send:hover:not(:disabled) {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
+        .chat-modal.active {
+            display: flex;
         }
 
-        .ai-chat-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .chat-shell {
+            width: min(100%, 520px);
+            max-height: min(88vh, 720px);
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            background: #0f1f42;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
-        .ai-chat-send svg {
-            width: 20px;
-            height: 20px;
-            fill: #0A0F2C;
+        .chat-header {
+            padding: 18px 20px;
+            background: linear-gradient(135deg, rgba(0, 200, 83, 0.2), rgba(15, 98, 254, 0.12));
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: flex-start;
         }
 
-        @media (max-width: 768px) {
-            .ai-chat-button {
-                width: 60px;
-                height: 60px;
-                bottom: 20px;
-                right: 20px;
+        .chat-header h2 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .chat-close {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            padding: 20px;
+            overflow-y: auto;
+            display: grid;
+            gap: 12px;
+            align-content: start;
+            background: rgba(2, 10, 22, 0.34);
+        }
+
+        .chat-bubble {
+            max-width: 88%;
+            padding: 14px 16px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .chat-bubble.user {
+            justify-self: end;
+            background: rgba(0, 200, 83, 0.14);
+            border-color: rgba(0, 200, 83, 0.2);
+        }
+
+        .chat-compose {
+            padding: 18px;
+            border-top: 1px solid var(--border);
+            display: grid;
+            gap: 10px;
+            background: #0f1f42;
+        }
+
+        .chat-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+        }
+
+        .chat-input {
+            min-height: 54px;
+            padding: 0 16px;
+        }
+
+        .chat-send {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--green), #23df71);
+            color: #062113;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 860px) {
+            .education-grid,
+            .result-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 16px 12px 110px;
             }
 
-            .ai-chat-button svg {
-                width: 30px;
-                height: 30px;
+            .hero,
+            .scanner-card,
+            .result-panel,
+            .education-card,
+            .warning-card {
+                padding: 22px;
+                border-radius: 22px;
             }
 
-            .ai-chat-container {
-                width: 95%;
-                max-height: 85vh;
+            .brand {
+                align-items: flex-start;
+            }
+
+            .how-it-works,
+            .tabs {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-fab {
+                right: 12px;
+                left: 12px;
+                justify-content: center;
             }
         }
     </style>
 </head>
-    <!-- AI Chat Button -->
-    <button class="ai-chat-button" id="ai-chat-button" onclick="openAIChat()">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H6L4 18V4H20V16Z"/>
-            <path d="M7 9H17M7 13H14"/>
-        </svg>
-        <span class="ai-chat-button-label">Ask AI / Uliza AI</span>
-    </button>
-
-    <!-- AI Chat Modal -->
-    <div class="ai-chat-modal" id="ai-chat-modal">
-        <div class="ai-chat-container">
-            <div class="ai-chat-header">
-                <div class="ai-chat-header-title">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
-                        <path d="M9 12L11 14L15 10" stroke="#0A0F2C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span>AI Scam Advisor</span>
-                </div>
-                <button class="ai-chat-close" onclick="closeAIChat()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="#0A0F2C" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="ai-chat-messages" id="ai-chat-messages">
-                <div class="ai-message assistant">
-                    <strong>👋 Habari! Welcome!</strong><br><br>
-                    I'm your AI Scam Advisor powered by IBM Watson. Ask me anything about job scams, suspicious messages, or get advice on staying safe online.
-                    <br><br>
-                    <em>Examples:</em><br>
-                    • "Is this job offer legitimate?"<br>
-                    • "What are common scam red flags?"<br>
-                    • "Should I pay for job training?"
-                </div>
-            </div>
-            <div class="ai-chat-input-area">
-                <div class="ai-chat-input-wrapper">
-                    <input 
-                        type="text" 
-                        class="ai-chat-input" 
-                        id="ai-chat-input" 
-                        placeholder="Ask about scams... / Uliza kuhusu ulaghai..."
-                        onkeypress="if(event.key==='Enter') sendAIMessage()"
-                    >
-                    <button class="ai-chat-send" id="ai-chat-send" onclick="sendAIMessage()">
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 <body>
-    <div id="root"></div>
-    <div class="container">
-        <div class="hero">
-            <div class="hero-logo">
-                <svg class="icon-xlarge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="#00C853" stroke="#00E676" stroke-width="1.5"/>
-                    <path d="M9 12L11 14L15 10" stroke="#0A0F2C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+    <main class="app-shell">
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
+                        <path d="M9 12L11 14L15 10" stroke="#081229" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="hero-copy">
+                    <h1 id="hero-title">Thibitisha</h1>
+                    <div class="subtitle">Verify job adverts. Fight scams. Stay safe.</div>
+                    <p>Welcome. If a job offer feels uncertain, paste it here or upload a screenshot and check it with calm, clear guidance before you respond.</p>
+                </div>
             </div>
-            <h1 class="hero-title">Thibitisha</h1>
-            <div class="hero-tagline">Verify Before You Trust. Protect Your Future.</div>
-            <div class="hero-description">
-                Kenya's first job scam detector. Paste any job advert and know in seconds if it is safe.
-            </div>
-            <div class="trust-badge">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5" y="11" width="14" height="10" rx="2" stroke="#00C853" stroke-width="2"/>
-                    <path d="M8 11V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V11" stroke="#00C853" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="12" cy="16" r="1.5" fill="#00C853"/>
-                </svg>
-                No data leaves your device
-            </div>
-        </div>
 
-        <div class="tabs">
-            <div class="tab active" data-tab="text">
-                <div class="tab-content">
-                    <svg class="icon-large" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="how-it-works" aria-label="How it works">
+                <div class="step-card">
+                    <div class="step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span>Paste</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span>Scan</span>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span>Result</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="scanner-card" aria-labelledby="scan-heading">
+            <div class="card-heading">
+                <div>
+                    <h2 id="scan-heading">Check a job advert</h2>
+                    <p>Use the format that is easiest for you. Thibitisha will explain what it finds in plain language.</p>
+                </div>
+                <div class="trust-pill">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    One scan at a time. No seeded data.
+                </div>
+            </div>
+
+            <div class="tabs" role="tablist" aria-label="Choose how to verify a job advert">
+                <button class="tab active" id="tab-text" type="button" role="tab" aria-selected="true" aria-controls="panel-text" data-tab="text">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M8 13H16M8 17H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M8 13H16M8 17H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    <span>Paste Text</span>
-                </div>
-            </div>
-            <div class="tab" data-tab="image">
-                <div class="tab-content">
-                    <svg class="icon-large" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    Paste Job Text
+                </button>
+                <button class="tab" id="tab-image" type="button" role="tab" aria-selected="false" aria-controls="panel-image" data-tab="image">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                         <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
                         <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
                         <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span>Upload Image</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="input-section active" id="text-input">
-            <textarea id="job-text" placeholder="Paste job advert here... / Bandika tangazo la kazi hapa..."></textarea>
-            <div class="error-message" id="text-error"></div>
-        </div>
-
-        <div class="input-section" id="image-input">
-            <div class="file-upload-area" id="upload-area">
-                <div class="upload-icon-wrapper">
-                    <svg class="icon-xlarge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#FFFFFF">
-                        <path d="M21 15V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M17 8L12 3L7 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 3V15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div><strong>Click to upload</strong> or drag and drop</div>
-                <div style="margin-top: 10px; font-size: 0.9rem; opacity: 0.7;">JPG, PNG, or WEBP (max 5MB)</div>
-            </div>
-            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
-            <div class="file-info" id="file-info" style="display: none;"></div>
-            <div class="error-message" id="image-error"></div>
-            
-            <div class="ocr-progress" id="ocr-progress">
-                <div style="text-align: center; margin-bottom: 10px;">
-                    <strong>Reading image... / Tunasoma picha...</strong>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <div id="ocr-status" style="text-align: center; font-size: 0.9rem; opacity: 0.8;"></div>
-            </div>
-
-            <div class="extracted-text" id="extracted-text">
-                <div class="extracted-text-header" onclick="toggleExtractedText()">
-                    <div class="extracted-text-title">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2"/>
-                            <path d="M14 2V8H20" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        <strong>Text we found / Maandishi tuliyopata</strong>
-                    </div>
-                    <svg class="icon" id="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div class="extracted-text-content" id="extracted-content"></div>
-            </div>
-        </div>
-
-        <button class="verify-button" id="verify-btn">
-            <svg class="icon-large shield-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M9 12L11 14L15 10" stroke="#0A0F2C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Verify / Thibitisha</span>
-        </button>
-
-        <div class="loading-state" id="loading">
-            <div class="loading-shield-wrapper">
-                <svg class="icon-xlarge spinning" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="#00C853" stroke="#00E676" stroke-width="1.5"/>
-                    <path d="M9 12L11 14L15 10" stroke="#0A0F2C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <div><strong>Analyzing... / Tunachunguza...</strong></div>
-        </div>
-
-        <div class="usage-limit" id="usage-limit">
-            <div class="usage-icon-wrapper">
-                <svg class="icon-xlarge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="10" stroke="#FFD600" stroke-width="2"/>
-                    <path d="M12 8V12" stroke="#FFD600" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill="#FFD600"/>
-                </svg>
-            </div>
-            <div><strong>You have reached today's limit.</strong></div>
-            <div>Umefika mwisho wa matumizi ya leo.</div>
-            <div style="margin-top: 15px;">Share Thibitisha with a friend! / Shiriki Thibitisha na rafiki yako!</div>
-        </div>
-
-        <div class="results" id="results">
-            <div class="score-circle" id="score-circle">
-                <span id="score-number">0</span>
-            </div>
-            <div class="score-label" id="score-label"></div>
-
-            <div class="danger-warning" id="danger-warning">
-                <div class="warning-icon-wrapper">
-                    <svg class="icon-xlarge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L2 20H22L12 2Z" fill="#FF3D00" stroke="#FF3D00" stroke-width="2" stroke-linejoin="round"/>
-                        <path d="M12 9V13" stroke="#0A0F2C" stroke-width="2.5" stroke-linecap="round"/>
-                        <circle cx="12" cy="17" r="1.5" fill="#0A0F2C"/>
-                    </svg>
-                </div>
-                <div>Do not go. Do not send money. Do not send your ID. Report this.</div>
-                <div>Usiende. Usitume pesa. Usitume ID yako. Ripoti hii.</div>
-                
-                <!-- Anonymous Reporting Checkbox -->
-                <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.95rem;">
-                        <input type="checkbox" id="anonymous-report-checkbox" style="margin-top: 3px; width: 18px; height: 18px; cursor: pointer;">
-                        <span style="flex: 1; line-height: 1.5;">
-                            <strong>Help protect others — share this scam pattern anonymously.</strong><br>
-                            <span style="font-size: 0.85rem; opacity: 0.9;">Saidia kulinda wengine — shiriki muundo wa ulaghai huu bila kujulikana.</span>
-                        </span>
-                    </label>
-                </div>
-                
-                <!-- Confirmation Message -->
-                <div id="report-confirmation" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0, 200, 83, 0.15); border-radius: 8px; border: 1px solid #00C853; color: #00E676; text-align: center; font-weight: 600;">
-                    ✓ Asante — you have helped protect other Kenyans.<br>
-                    <span style="font-size: 0.9rem; opacity: 0.9;">Asante — umesaidia kulinda Wakenya wengine.</span>
-                </div>
-            </div>
-
-            <div class="red-flags" id="red-flags"></div>
-
-            <div class="verdict" id="verdictText"></div>
-
-            <button id="ttsBtn" class="action-button primary" onclick="speakVerdict()" style="display: none;">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Sikia Matokeo / Hear Results
-            </button>
-
-            <div class="action-buttons">
-                <a href="https://diaspora.go.ke/verify" target="_blank" class="action-button primary">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-                        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M11 8V14M8 11H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    Verify Agency at diaspora.go.ke
-                </a>
-                <a href="https://dci.go.ke" target="_blank" class="action-button">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Report to DCI / Ripoti DCI
-                </a>
-                <button class="action-button" id="share-btn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"/>
-                        <circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
-                        <circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"/>
-                        <path d="M8.59 13.51L15.42 17.49M15.41 6.51L8.59 10.49" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                    Share Result / Shiriki Matokeo
+                    Upload Screenshot (OCR)
                 </button>
             </div>
 
-            <div class="tech-stack">
-                <div class="tech-stack-title">Powered by IBM Technology</div>
-                <div class="tech-badges">
-                    <div class="tech-badge">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        IBM Watson NLU (AI-Enhanced Analysis)
-                    </div>
-                    <div class="tech-badge">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                            <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        IBM Watson Text-to-Speech (Accessibility)
-                    </div>
-                    <div class="tech-badge">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                        IBM Cloudant (Community Scam Intelligence)
-                    </div>
-                    <div class="tech-badge">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z" stroke="currentColor" stroke-width="2"/>
-                            <path d="M12 12C13.1046 12 14 11.1046 14 10C14 8.89543 13.1046 8 12 8C10.8954 8 10 8.89543 10 10C10 11.1046 10.8954 12 12 12Z" stroke="currentColor" stroke-width="2"/>
-                            <path d="M7 18V22M17 18V22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        IBM watsonx Orchestrate (AI Chat Agent)
-                    </div>
-                    <div class="tech-badge">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Built with IBM Bob (AI Development Partner)
-                    </div>
-                </div>
+            <div class="input-panel active" id="panel-text" role="tabpanel" aria-labelledby="tab-text">
+                <label for="job-text">Job advert text</label>
+                <textarea id="job-text" placeholder="Paste the job advert, social media caption, or recruiter message here."></textarea>
+                <div class="helper-text">Tip: include salary promises, payment requests, links, phone numbers, or agency names if they are part of the advert.</div>
+                <div class="error-box" id="text-error" role="alert"></div>
             </div>
 
-            <button class="reset-button" id="reset-btn">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M20.49 9C19.9828 7.56678 19.1209 6.28536 17.9845 5.27542C16.8482 4.26548 15.4745 3.55976 13.9917 3.22426C12.5089 2.88875 10.9652 2.93434 9.50481 3.35677C8.04437 3.77921 6.71475 4.56471 5.64 5.64L1 10M23 14L18.36 18.36C17.2853 19.4353 15.9556 20.2208 14.4952 20.6432C13.0348 21.0657 11.4911 21.1112 10.0083 20.7757C8.52547 20.4402 7.1518 19.7345 6.01547 18.7246C4.87913 17.7146 4.01717 16.4332 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <div class="input-panel" id="panel-image" role="tabpanel" aria-labelledby="tab-image">
+                <label for="file-input">Screenshot or flyer image</label>
+                <div class="upload-area" id="upload-area" tabindex="0" role="button" aria-describedby="upload-note">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M21 15V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="upload-title">Drag and drop an image here, or tap to upload</div>
+                    <div class="upload-note" id="upload-note">Use a clear screenshot of the advert. Supported formats: JPG, PNG, WEBP up to 5MB.</div>
+                </div>
+                <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp">
+                <div class="file-pill" id="file-pill"></div>
+                <div class="ocr-progress" id="ocr-progress">
+                    <div style="flex: 1;">
+                        <strong>Reading the image…</strong>
+                        <div class="progress-track" aria-hidden="true">
+                            <div class="progress-bar" id="progress-bar"></div>
+                        </div>
+                        <div class="ocr-status" id="ocr-status">Preparing OCR</div>
+                    </div>
+                </div>
+                <div class="helper-text" id="extracted-preview">Once your image is read, the extracted text will be used automatically for verification.</div>
+                <div class="error-box" id="image-error" role="alert"></div>
+            </div>
+
+            <button class="primary-button" id="verify-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 2L4 6V11C4 16.55 7.84 21.74 13 23C18.16 21.74 22 16.55 22 11V6L12 2Z" fill="currentColor"/>
+                    <path d="M9 12L11 14L15 10" stroke="#081229" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Check Another Advert / Angalia Tangazo Lingine
+                Verify now
             </button>
+
+            <div class="loading-state" id="loading-state" aria-live="polite">
+                <div class="spinner" aria-hidden="true"></div>
+                <div><strong>Checking the advert now.</strong> We are looking for common scam warning signs and preparing a clear result.</div>
+            </div>
+        </section>
+
+        <section class="result-panel" id="result-panel" aria-live="polite">
+            <div class="verdict-card safe" id="verdict-card">
+                <div class="verdict-head">
+                    <div class="verdict-icon" id="verdict-icon" aria-hidden="true"></div>
+                    <div class="verdict-copy">
+                        <div class="verdict-badge" id="verdict-badge">Safe</div>
+                        <h3 id="verdict-title">Ready to review</h3>
+                        <p id="verdict-message"></p>
+                    </div>
+                </div>
+                <div class="result-footnote">You did the right thing by checking first.</div>
+            </div>
+
+            <div class="findings-card">
+                <h4 id="findings-title">What Thibitisha found</h4>
+                <ul class="findings-list" id="findings-list"></ul>
+                <p class="empty-findings" id="empty-findings"></p>
+            </div>
+
+            <div class="result-actions">
+                <div class="tooltip-wrap" data-tooltip="Read the latest result aloud">
+                    <button class="tts-button" id="tts-button" type="button" aria-label="Read the latest result aloud">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Listen to this result
+                    </button>
+                </div>
+
+                <button class="report-button" id="report-button" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 4H14L13 9H21L19 17H8L9 12H3V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 21V4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Report scam
+                </button>
+
+                <div class="report-confirmation" id="report-confirmation" role="status">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22" aria-hidden="true">
+                        <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="report-confirmation-text">Thank you. Your report was shared anonymously.</span>
+                </div>
+
+                <div class="result-actions-grid">
+                    <a class="link-button" href="https://diaspora.go.ke/verify" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Verify an overseas agency
+                    </a>
+                    <a class="secondary-button" href="https://dci.go.ke" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 22S20 18 20 11V5L12 2L4 5V11C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Contact official investigators
+                    </a>
+                </div>
+
+                <button class="reset-button" id="reset-button" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M3 12A9 9 0 1 0 6.6 4.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 4V10H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Check another advert
+                </button>
+            </div>
+        </section>
+
+        <section class="education-grid" aria-label="Stay safe and learn more">
+            <section class="education-card">
+                <h2>How to stay safe</h2>
+                <p>Keep these steps close whenever a job offer arrives through social media, chat groups, or direct messages.</p>
+                <ul class="checklist">
+                    <li><span class="bullet">✓</span><span>Confirm the employer or agency through official websites, verified social pages, or trusted directories before replying.</span></li>
+                    <li><span class="bullet">✓</span><span>Pause if you are asked for money, registration fees, transport fees, visa fees, or medical fees before a formal offer.</span></li>
+                    <li><span class="bullet">✓</span><span>Protect your ID, passport, certificates, and banking details until you have verified who is requesting them and why.</span></li>
+                    <li><span class="bullet">✓</span><span>Save screenshots, names, and payment details if something feels wrong so you can report it quickly.</span></li>
+                </ul>
+            </section>
+
+            <section class="warning-card">
+                <h2>Current scam warnings</h2>
+                <p>These warning signs are commonly reported in fraudulent recruitment messages targeting job seekers in Kenya.</p>
+                <ul class="warning-list">
+                    <li><span class="bullet">!</span><span>Upfront requests for application, processing, visa, training, or clearance fees.</span></li>
+                    <li><span class="bullet">!</span><span>Pressure to move the conversation to WhatsApp or Telegram immediately instead of official channels.</span></li>
+                    <li><span class="bullet">!</span><span>Promises of very high pay, overseas travel, or guaranteed placement with little or no interview process.</span></li>
+                    <li><span class="bullet">!</span><span>Urgent requests for passport copies, ID photos, M-Pesa details, or bank information before verification.</span></li>
+                </ul>
+            </section>
+        </section>
+    </main>
+
+    <button class="chat-fab" id="chat-fab" type="button" aria-haspopup="dialog" aria-controls="chat-modal">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 9H17M7 13H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Chat with Thibitisha
+    </button>
+
+    <div class="chat-modal" id="chat-modal" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+        <div class="chat-shell">
+            <div class="chat-header">
+                <div>
+                    <h2 id="chat-title">Chat with Thibitisha</h2>
+                    <p class="chat-hint">Ask about scam warning signs, safety steps, or how to report suspicious adverts.</p>
+                </div>
+                <button class="chat-close" id="chat-close" type="button" aria-label="Close chat">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-bubble assistant">Hello. I can help you understand common scam signs, safe next steps, and where to report suspicious adverts. Ask me in your own words.</div>
+            </div>
+            <div class="chat-compose">
+                <div class="chat-row">
+                    <input class="chat-input" id="chat-input" type="text" placeholder="Ask about a scam pattern, a payment request, or where to report…">
+                    <button class="chat-send" id="chat-send" type="button" aria-label="Send chat message">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="chat-hint">Thibitisha gives guidance only. Use the main verifier above when you want a verdict on a specific advert.</div>
+            </div>
         </div>
     </div>
 
     <script>
-        /* ============================================
-           CONFIGURATION LOADED FROM config.js
-           ============================================
-           All API keys and configuration are loaded from config.js
-           which is included in the <head> section.
-           
-           Available configuration variables:
-           - IBM_NLU_CONFIG (Natural Language Understanding - AI-Enhanced Analysis)
-           - CLOUDANT_URL, CLOUDANT_API_KEY, CLOUDANT_DATABASE (Community Scam Intelligence)
-           
-           Note: Text-to-Speech uses browser's native Web Speech API (no API key needed)
-           
-           To configure, edit config.js (not this file).
-           ============================================ */
+        const state = {
+            currentTab: 'text',
+            extractedText: '',
+            currentAnalysis: null,
+            currentFile: null,
+        };
 
-        // State Management
-        let currentTab = 'text';
-        let extractedText = '';
-        let currentAnalysis = null;
-        let usageCount = parseInt(sessionStorage.getItem('thibitisha_usage') || '0');
-        let nluEnhanced = false;
+        const verdictMeta = {
+            safe: {
+                badge: 'Safe',
+                title: 'This advert looks safer',
+                message: 'We did not find common scam signals in this advert. It is still smart to confirm the employer and contact details before you reply.',
+                icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22S20 18 20 11V5L12 2L4 5V11C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                empty: 'No common scam patterns were detected in this advert. Keep checking names, links, and contact details before taking the next step.'
+            },
+            caution: {
+                badge: 'Caution',
+                title: 'Take a closer look first',
+                message: 'We found a few warning signs that deserve a second check. You are doing the right thing by pausing before you respond or share documents.',
+                icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9V13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/><path d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                empty: 'A few caution signals were raised even though no single scam pattern dominated the advert. Verify the employer carefully before moving forward.'
+            },
+            danger: {
+                badge: 'Dangerous',
+                title: 'This advert looks risky',
+                message: 'We found multiple warning signs linked to job scams. Please avoid sending money, documents, or travel details until trusted checks confirm the offer is real.',
+                icon: '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 9V13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/><path d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                empty: 'The overall combination of language in this advert is high risk even without a long findings list. It is safest to stop and verify through official channels.'
+            }
+        };
 
-        // DOM Elements
-        const tabs = document.querySelectorAll('.tab');
-        const textInput = document.getElementById('text-input');
-        const imageInput = document.getElementById('image-input');
-        const jobText = document.getElementById('job-text');
-        const uploadArea = document.getElementById('upload-area');
-        const fileInput = document.getElementById('file-input');
-        const fileInfo = document.getElementById('file-info');
-        const verifyBtn = document.getElementById('verify-btn');
-        const loading = document.getElementById('loading');
-        const results = document.getElementById('results');
-        const usageLimit = document.getElementById('usage-limit');
+        const riskPatterns = [
+            {
+                regex: /\b(pay|send|deposit|fee|processing|registration|visa|medical|clearance|security|training)\b.{0,30}\b(fee|money|payment|ksh|kes|mpesa|m-pesa|cash)\b/gi,
+                label: 'The advert asks for money before a verified hiring process.',
+                weight: 3
+            },
+            {
+                regex: /\b(whatsapp|telegram)\b.{0,20}\b(only|direct|immediately|now|urgent|asap)\b/gi,
+                label: 'It pushes the conversation to informal messaging channels right away.',
+                weight: 2
+            },
+            {
+                regex: /\b(no experience|anyone can apply|everyone welcome|immediate start|quick money|easy money|guaranteed job|100% hired)\b/gi,
+                label: 'It makes promises that sound too easy or guaranteed.',
+                weight: 2
+            },
+            {
+                regex: /\b(dubai|qatar|saudi|oman|kuwait|uae|overseas|abroad|middle east)\b/gi,
+                label: 'It mentions overseas placement, which should always be verified through official agencies.',
+                weight: 2
+            },
+            {
+                regex: /\b(id|passport|certificate|national id|bank|mpesa|paybill|till)\b.{0,24}\b(copy|scan|photo|picture|details|number)\b/gi,
+                label: 'It asks for personal documents or payment details early.',
+                weight: 2
+            },
+            {
+                regex: /\b(hurry|act now|limited slots|last chance|today only|few positions|urgent)\b/gi,
+                label: 'It uses pressure language to make you act quickly.',
+                weight: 1
+            }
+        ];
 
-        // Tab Switching
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-                
-                // Update active tab
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Update active input section
-                textInput.classList.remove('active');
-                imageInput.classList.remove('active');
-                
-                if (tabName === 'text') {
-                    textInput.classList.add('active');
-                } else {
-                    imageInput.classList.add('active');
-                }
-                
-                currentTab = tabName;
-                clearErrors();
+        const elements = {
+            tabs: Array.from(document.querySelectorAll('.tab')),
+            panels: {
+                text: document.getElementById('panel-text'),
+                image: document.getElementById('panel-image')
+            },
+            jobText: document.getElementById('job-text'),
+            uploadArea: document.getElementById('upload-area'),
+            fileInput: document.getElementById('file-input'),
+            filePill: document.getElementById('file-pill'),
+            verifyBtn: document.getElementById('verify-btn'),
+            loading: document.getElementById('loading-state'),
+            textError: document.getElementById('text-error'),
+            imageError: document.getElementById('image-error'),
+            ocrProgress: document.getElementById('ocr-progress'),
+            progressBar: document.getElementById('progress-bar'),
+            ocrStatus: document.getElementById('ocr-status'),
+            resultPanel: document.getElementById('result-panel'),
+            verdictCard: document.getElementById('verdict-card'),
+            verdictIcon: document.getElementById('verdict-icon'),
+            verdictBadge: document.getElementById('verdict-badge'),
+            verdictTitle: document.getElementById('verdict-title'),
+            verdictMessage: document.getElementById('verdict-message'),
+            findingsList: document.getElementById('findings-list'),
+            findingsTitle: document.getElementById('findings-title'),
+            emptyFindings: document.getElementById('empty-findings'),
+            ttsButton: document.getElementById('tts-button'),
+            reportButton: document.getElementById('report-button'),
+            reportConfirmation: document.getElementById('report-confirmation'),
+            reportConfirmationText: document.getElementById('report-confirmation-text'),
+            resetButton: document.getElementById('reset-button'),
+            extractedPreview: document.getElementById('extracted-preview'),
+            chatFab: document.getElementById('chat-fab'),
+            chatModal: document.getElementById('chat-modal'),
+            chatClose: document.getElementById('chat-close'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatInput: document.getElementById('chat-input'),
+            chatSend: document.getElementById('chat-send')
+        };
+
+        function setTab(tab) {
+            state.currentTab = tab;
+            elements.tabs.forEach(button => {
+                const isActive = button.dataset.tab === tab;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-selected', String(isActive));
             });
-        });
-
-        // File Upload Handlers
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                handleFileUpload(file);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleFileUpload(file);
-            }
-        });
-
-        async function handleFileUpload(file) {
+            elements.panels.text.classList.toggle('active', tab === 'text');
+            elements.panels.image.classList.toggle('active', tab === 'image');
             clearErrors();
-            
-            // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showError('image', 'Picha ni kubwa sana. Tumia picha ndogo ya 5MB / Image too large. Use image under 5MB');
-                return;
-            }
-
-            // Show file info
-            fileInfo.style.display = 'flex';
-            fileInfo.innerHTML = `
-                <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-                    <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span>${file.name}</span>
-            `;
-
-            // Show OCR progress
-            const ocrProgress = document.getElementById('ocr-progress');
-            const progressFill = document.getElementById('progress-fill');
-            const ocrStatus = document.getElementById('ocr-status');
-            
-            ocrProgress.classList.add('active');
-            progressFill.style.width = '0%';
-
-            try {
-                const worker = await Tesseract.createWorker();
-                
-                await worker.loadLanguage('eng');
-                await worker.initialize('eng');
-                
-                const { data } = await worker.recognize(file, {
-                    logger: (m) => {
-                        if (m.status === 'recognizing text') {
-                            const progress = Math.round(m.progress * 100);
-                            progressFill.style.width = progress + '%';
-                            ocrStatus.textContent = `${progress}%`;
-                        }
-                    }
-                });
-                
-                await worker.terminate();
-                
-                extractedText = data.text.trim();
-                
-                if (extractedText.length < 20) {
-                    showError('image', 'Maandishi hayaonekani vizuri. Jaribu picha nyingine / Text not clear. Try another image');
-                    ocrProgress.classList.remove('active');
-                    return;
-                }
-                
-                // Show extracted text
-                const extractedTextBox = document.getElementById('extracted-text');
-                const extractedContent = document.getElementById('extracted-content');
-                
-                extractedContent.textContent = extractedText;
-                extractedTextBox.classList.add('active');
-                
-                ocrProgress.classList.remove('active');
-                
-            } catch (error) {
-                console.error('OCR Error:', error);
-                showError('image', 'Kuna tatizo. Jaribu tena / Something went wrong. Try again');
-                ocrProgress.classList.remove('active');
-            }
         }
 
-        function toggleExtractedText() {
-            const content = document.getElementById('extracted-content');
-            const icon = document.getElementById('toggle-icon');
-            
-            content.classList.toggle('collapsed');
-            
-            // Update icon rotation
-            if (content.classList.contains('collapsed')) {
-                icon.style.transform = 'rotate(-90deg)';
-            } else {
-                icon.style.transform = 'rotate(0deg)';
-            }
-        }
-
-        // Error Handling
         function showError(type, message) {
-            const errorEl = document.getElementById(`${type}-error`);
-            errorEl.textContent = message;
-            errorEl.classList.add('active');
+            const target = type === 'text' ? elements.textError : elements.imageError;
+            target.textContent = message;
+            target.classList.add('active');
         }
 
         function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.classList.remove('active');
-            });
+            elements.textError.classList.remove('active');
+            elements.imageError.classList.remove('active');
         }
 
-        // IBM Watson NLU Analysis
+        function resetReportNotice() {
+            elements.reportConfirmation.classList.remove('active');
+            elements.reportConfirmationText.textContent = 'Thank you. Your report was shared anonymously.';
+        }
+
+        function updateFilePill(file) {
+            if (!file) {
+                elements.filePill.style.display = 'none';
+                elements.filePill.textContent = '';
+                return;
+            }
+            elements.filePill.style.display = 'inline-flex';
+            elements.filePill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>' + file.name + '</span>';
+        }
+
+        async function handleFileUpload(file) {
+            clearErrors();
+            resetReportNotice();
+
+            if (!file || !file.type.startsWith('image/')) {
+                showError('image', 'Please choose a clear image file to continue.');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showError('image', 'Please upload an image under 5MB.');
+                return;
+            }
+
+            state.currentFile = file;
+            state.extractedText = '';
+            updateFilePill(file);
+            elements.extractedPreview.textContent = 'We will read the text in this image so you can verify it.';
+            elements.ocrProgress.classList.add('active');
+            elements.progressBar.style.width = '0%';
+            elements.ocrStatus.textContent = 'Preparing OCR';
+
+            try {
+                const worker = await Tesseract.createWorker();
+                await worker.loadLanguage('eng');
+                await worker.initialize('eng');
+
+                const result = await worker.recognize(file, {
+                    logger(message) {
+                        if (message.status === 'recognizing text') {
+                            const progress = Math.round(message.progress * 100);
+                            elements.progressBar.style.width = progress + '%';
+                            elements.ocrStatus.textContent = progress + '% complete';
+                        }
+                    }
+                });
+
+                await worker.terminate();
+                state.extractedText = (result.data.text || '').trim();
+
+                if (state.extractedText.length < 20) {
+                    showError('image', 'We could not read enough text from this image. Please try a clearer screenshot.');
+                    elements.extractedPreview.textContent = 'Try another image with clearer text or higher contrast.';
+                } else {
+                    elements.extractedPreview.textContent = 'Ready to verify. OCR found: “' + state.extractedText.slice(0, 180) + (state.extractedText.length > 180 ? '…' : '') + '”';
+                }
+            } catch (error) {
+                console.error('OCR error:', error);
+                showError('image', 'Something went wrong while reading the image. Please try again.');
+            } finally {
+                elements.ocrProgress.classList.remove('active');
+            }
+        }
+
         async function analyzeWithIBMNLU(text) {
-            // Check if API key is configured
-            if (!IBM_NLU_CONFIG.apiKey || IBM_NLU_CONFIG.apiKey === 'YOUR_IBM_WATSON_NLU_API_KEY_HERE') {
-                console.log('IBM Watson NLU not configured, skipping AI enhancement');
+            if (typeof IBM_NLU_CONFIG === 'undefined' || !IBM_NLU_CONFIG || !IBM_NLU_CONFIG.apiKey || !IBM_NLU_CONFIG.url) {
                 return null;
             }
 
             try {
-                const response = await fetch(`${IBM_NLU_CONFIG.url}/v1/analyze?version=${IBM_NLU_CONFIG.version}`, {
+                const response = await fetch(IBM_NLU_CONFIG.url + '/v1/analyze?version=' + (IBM_NLU_CONFIG.version || '2022-04-07'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1550,807 +1328,388 @@
                         text: text,
                         features: {
                             sentiment: {},
-                            keywords: {
-                                limit: 10
-                            },
-                            entities: {
-                                limit: 10
-                            }
+                            keywords: { limit: 8 },
+                            entities: { limit: 8 }
                         },
                         language: 'en'
                     })
                 });
 
                 if (!response.ok) {
-                    throw new Error('NLU API request failed');
+                    throw new Error('NLU request failed: ' + response.status);
                 }
 
-                const data = await response.json();
-                return data;
+                return await response.json();
             } catch (error) {
-                console.error('IBM Watson NLU Error:', error);
+                console.error('IBM NLU error:', error);
                 return null;
             }
         }
 
-        // Enhanced Risk Scoring with NLU
-        function calculateNLURiskScore(nluData) {
-            let additionalScore = 0;
-            const nluFlags = [];
-
-            if (!nluData) return { score: 0, flags: [] };
-
-            // 1. Sentiment Analysis - Negative sentiment adds 1 point
-            if (nluData.sentiment && nluData.sentiment.document) {
-                const sentiment = nluData.sentiment.document.label;
-                const sentimentScore = nluData.sentiment.document.score;
-                
-                if (sentiment === 'negative' && sentimentScore < -0.3) {
-                    additionalScore += 1;
-                    nluFlags.push({
-                        flag: 'Negative sentiment detected / Hisia mbaya zimegunduliwa',
-                        weight: 1,
-                        source: 'AI'
-                    });
-                }
-            }
-
-            // 2. Check for Russia/war-related locations - adds 2 points
-            if (nluData.entities) {
-                const dangerousLocations = ['russia', 'ukraine', 'syria', 'yemen', 'afghanistan', 'iraq', 'libya'];
-                const locations = nluData.entities
-                    .filter(entity => entity.type === 'Location')
-                    .map(entity => entity.text.toLowerCase());
-
-                const foundDangerousLocation = locations.some(loc =>
-                    dangerousLocations.some(danger => loc.includes(danger))
-                );
-
-                if (foundDangerousLocation) {
-                    additionalScore += 2;
-                    nluFlags.push({
-                        flag: 'High-risk conflict zone mentioned / Eneo la vita hatari limetajwa',
-                        weight: 2,
-                        source: 'AI'
-                    });
-                }
-            }
-
-            // 3. Unrecognized organizations - adds 1 point
-            if (nluData.entities) {
-                const organizations = nluData.entities.filter(entity => entity.type === 'Organization');
-                
-                // Check if organizations have low relevance scores (likely unverified)
-                const suspiciousOrgs = organizations.filter(org => org.relevance < 0.5);
-                
-                if (suspiciousOrgs.length > 0) {
-                    additionalScore += 1;
-                    nluFlags.push({
-                        flag: 'Unverified organization mentioned / Shirika lisilothibitishwa limetajwa',
-                        weight: 1,
-                        source: 'AI'
-                    });
-                }
-            }
-
-            return { score: additionalScore, flags: nluFlags };
+        function normalizeFindings(flags) {
+            return Array.from(new Set(flags.map(item => item.label)));
         }
 
-        // IBM Cloudant Configuration (loaded from config.js)
-
-        // Submit Anonymous Report to Cloudant
-        async function submitAnonymousReport(analysis) {
-            try {
-                // Extract only pattern names (no text content)
-                const detectedPatterns = analysis.flags.map(flag => {
-                    // Extract just the pattern name before the slash
-                    const patternName = flag.flag.split('/')[0].trim();
-                    return patternName;
-                });
-
-                // Prepare anonymous data
-                const reportData = {
-                    risk_score: analysis.score,
-                    detected_patterns: detectedPatterns,
-                    timestamp: new Date().toISOString(),
-                    country: "Kenya"
-                };
-
-                // Submit to Cloudant
-                const response = await fetch(`${CLOUDANT_URL}/${CLOUDANT_DATABASE}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${CLOUDANT_API_KEY}`
-                    },
-                    body: JSON.stringify(reportData)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Cloudant API error: ${response.status}`);
-                }
-
-                return true;
-            } catch (error) {
-                console.error('Failed to submit anonymous report:', error);
-                return false;
-            }
-        }
-
-        // Analysis Logic (Enhanced with NLU)
         async function analyzeJobAdvert(text) {
-            const lowerText = text.toLowerCase();
-            const flags = [];
+            const findings = [];
             let score = 0;
 
-            // Red Flag Patterns
-            const patterns = [
-                {
-                    regex: /\b(pay|send|deposit|fee|processing|registration|visa|medical|clearance|security)\s*(fee|money|payment|ksh|kes|\d+)/gi,
-                    flag: "Upfront payment requested / Inataka malipo ya awali",
-                    weight: 3
-                },
-                {
-                    regex: /\b(whatsapp|telegram|call|text|sms)\s*(only|directly|immediately|now|asap)/gi,
-                    flag: "Contact only via WhatsApp/Telegram / Mawasiliano kupitia WhatsApp/Telegram tu",
-                    weight: 2
-                },
-                {
-                    regex: /\b(no\s*experience|anyone|everybody|all|urgent|immediate|quick|fast|easy)\s*(needed|required|welcome|money|cash|salary)/gi,
-                    flag: "Too good to be true promises / Ahadi za ajabu sana",
-                    weight: 2
-                },
-                {
-                    regex: /\b(dubai|saudi|qatar|kuwait|oman|bahrain|uae|middle\s*east|gulf|abroad|overseas)\b/gi,
-                    flag: "Overseas job (verify agency) / Kazi nje ya nchi (thibitisha wakala)",
-                    weight: 2
-                },
-                {
-                    regex: /\b(id|passport|certificate|document)\s*(copy|scan|photo|picture)/gi,
-                    flag: "Requests ID/documents upfront / Inataka ID/hati mapema",
-                    weight: 2
-                },
-                {
-                    regex: /\b(guaranteed|100%|sure|confirmed|approved)\s*(job|visa|salary|income)/gi,
-                    flag: "Guaranteed job promises / Ahadi za kazi bila shaka",
-                    weight: 2
-                },
-                {
-                    regex: /\b(limited|few|only|hurry|act\s*now|don't\s*miss|last\s*chance)\s*(slots|positions|spaces|opportunity)/gi,
-                    flag: "Pressure tactics / Mbinu za kusukuma",
-                    weight: 1
-                },
-                {
-                    regex: /\b(mpesa|paybill|till|account|bank)\s*(number|details|info)/gi,
-                    flag: "Payment details provided / Maelezo ya malipo yametolewa",
-                    weight: 3
-                }
-            ];
-
-            // Check each pattern
-            patterns.forEach(pattern => {
-                const matches = text.match(pattern.regex);
-                if (matches) {
-                    flags.push({
-                        flag: pattern.flag,
-                        weight: pattern.weight
-                    });
+            riskPatterns.forEach(pattern => {
+                if (pattern.regex.test(text)) {
+                    findings.push({ label: pattern.label, weight: pattern.weight });
                     score += pattern.weight;
                 }
+                pattern.regex.lastIndex = 0;
             });
 
-            // Determine risk level
-            let riskLevel, riskLabel, verdict;
-            
-            if (score >= 6) {
-                riskLevel = 'danger';
-                riskLabel = 'HIGH RISK / HATARI KUBWA';
-                verdict = 'This job advert shows multiple red flags commonly found in scams and trafficking schemes. Do not proceed. Do not send money or documents. Report to authorities. / Tangazo hili linaonyesha ishara nyingi za ulaghai na biashara haramu. Usiendelee. Usitume pesa au hati. Ripoti kwa mamlaka.';
-            } else if (score >= 3) {
-                riskLevel = 'caution';
-                riskLabel = 'MEDIUM RISK / HATARI YA KATI';
-                verdict = 'This job advert has some concerning elements. Verify the agency with diaspora.go.ke before proceeding. Never pay upfront fees. / Tangazo hili lina mambo ya kustaajabisha. Thibitisha wakala kwenye diaspora.go.ke kabla ya kuendelea. Kamwe usilipe ada za awali.';
-            } else {
-                riskLevel = 'safe';
-                riskLabel = 'LOW RISK / HATARI NDOGO';
-                verdict = 'This job advert shows fewer red flags, but always verify the employer and agency. Never pay upfront fees for any job. / Tangazo hili linaonyesha ishara chache za hatari, lakini daima thibitisha mwajiri na wakala. Kamwe usilipe ada za awali kwa kazi yoyote.';
+            const nlu = await analyzeWithIBMNLU(text);
+            if (nlu && nlu.sentiment && nlu.sentiment.document && nlu.sentiment.document.label === 'negative' && nlu.sentiment.document.score < -0.45) {
+                findings.push({ label: 'The wording carries extra urgency or negativity that often appears in scam messages.', weight: 1 });
+                score += 1;
             }
 
-            // Try to enhance with IBM Watson NLU
-            let nluData = null;
-            let nluRisk = { score: 0, flags: [] };
-            
-            try {
-                nluData = await analyzeWithIBMNLU(text);
-                if (nluData) {
-                    nluRisk = calculateNLURiskScore(nluData);
-                    score += nluRisk.score;
-                    flags.push(...nluRisk.flags);
-                    nluEnhanced = true;
-                }
-            } catch (error) {
-                console.error('NLU enhancement failed:', error);
-                nluEnhanced = false;
+            const keywords = (nlu && nlu.keywords ? nlu.keywords : []).map(keyword => keyword.text.toLowerCase());
+            if (keywords.some(keyword => keyword.includes('visa') || keyword.includes('payment'))) {
+                findings.push({ label: 'The advert repeats money or travel terms that are worth checking carefully.', weight: 1 });
+                score += 1;
             }
 
-            // Recalculate risk level with enhanced score
+            let riskLevel = 'safe';
             if (score >= 6) {
                 riskLevel = 'danger';
-                riskLabel = 'HIGH RISK / HATARI KUBWA';
-                verdict = 'This job advert shows multiple red flags commonly found in scams and trafficking schemes. Do not proceed. Do not send money or documents. Report to authorities. / Tangazo hili lina ishara nyingi za ulaghai na biashara haramu. Usiendelee. Usitume pesa au hati. Ripoti kwa mamlaka.';
             } else if (score >= 3) {
                 riskLevel = 'caution';
-                riskLabel = 'MEDIUM RISK / HATARI YA KATI';
-                verdict = 'This job advert has some concerning elements. Verify the agency with diaspora.go.ke before proceeding. Never pay upfront fees. / Tangazo hili lina mambo ya kustaajabisha. Thibitisha wakala kwenye diaspora.go.ke kabla ya kuendelea. Kamwe usilipe ada za awali.';
-            } else {
-                riskLevel = 'safe';
-                riskLabel = 'LOW RISK / HATARI NDOGO';
-                verdict = 'This job advert shows fewer red flags, but always verify the employer and agency. Never pay upfront fees for any job. / Tangazo hili linaonyesha ishara chache za hatari, lakini daima thibitisha mwajiri na wakala. Kamwe usilipe ada za awali kwa kazi yoyote.';
             }
 
             return {
-                score,
-                riskLevel,
-                riskLabel,
-                flags,
-                verdict,
-                nluEnhanced: nluEnhanced,
-                nluData: nluData
+                riskLevel: riskLevel,
+                score: score,
+                findings: normalizeFindings(findings),
+                sourceText: text.trim()
             };
         }
 
-        // Display Results
         function displayResults(analysis) {
-            currentAnalysis = analysis;
-            loading.classList.remove('active');
-            results.classList.add('active');
+            state.currentAnalysis = analysis;
+            const meta = verdictMeta[analysis.riskLevel];
+            elements.verdictCard.className = 'verdict-card ' + analysis.riskLevel;
+            elements.verdictIcon.innerHTML = meta.icon;
+            elements.verdictBadge.textContent = meta.badge;
+            elements.verdictTitle.textContent = meta.title;
+            elements.verdictMessage.textContent = meta.message;
+            elements.findingsTitle.textContent = analysis.findings.length ? 'What Thibitisha found' : 'What this means';
+            elements.findingsList.innerHTML = '';
+            elements.emptyFindings.textContent = '';
 
-            const scoreCircle = document.getElementById('score-circle');
-            const scoreNumber = document.getElementById('score-number');
-            const scoreLabel = document.getElementById('score-label');
-
-            // Update score circle
-            scoreCircle.className = 'score-circle ' + analysis.riskLevel;
-            scoreLabel.className = 'score-label ' + analysis.riskLevel;
-            
-            // Add AI-Enhanced badge if NLU was used
-            if (analysis.nluEnhanced) {
-                scoreLabel.innerHTML = `
-                    ${analysis.riskLabel}
-                    <div style="margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: #00C853; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                        <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#00C853" stroke="#00E676" stroke-width="1.5"/>
-                        </svg>
-                        AI-Enhanced Analysis
-                    </div>
-                `;
-            } else {
-                scoreLabel.textContent = analysis.riskLabel;
-            }
-
-            // Animate score
-            let currentScore = 0;
-            const interval = setInterval(() => {
-                if (currentScore <= analysis.score) {
-                    scoreNumber.textContent = currentScore;
-                    currentScore++;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 150);
-
-            // Display red flags
-            const redFlagsContainer = document.getElementById('red-flags');
-            redFlagsContainer.innerHTML = '';
-            
-            if (analysis.flags.length > 0) {
-                analysis.flags.forEach((flag, index) => {
-                    const flagEl = document.createElement('div');
-                    flagEl.className = 'red-flag-item';
-                    flagEl.innerHTML = `
-                        <svg class="icon red-flag-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L2 20H22L12 2Z" fill="#FF3D00" stroke="#FF3D00" stroke-width="2" stroke-linejoin="round"/>
-                            <path d="M12 9V13" stroke="#0A0F2C" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="12" cy="17" r="1" fill="#0A0F2C"/>
-                        </svg>
-                        <strong>${flag.flag}</strong>
-                    `;
-                    redFlagsContainer.appendChild(flagEl);
+            if (analysis.findings.length) {
+                analysis.findings.forEach(text => {
+                    const color = analysis.riskLevel === 'safe' ? '#00c853' : analysis.riskLevel === 'caution' ? '#ffcf33' : '#ff6b57';
+                    const item = document.createElement('li');
+                    item.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2L2 20H22L12 2Z" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M12 9V13" stroke="' + color + '" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="' + color + '"/></svg><span>' + text + '</span>';
+                    elements.findingsList.appendChild(item);
                 });
             } else {
-                const noFlagsEl = document.createElement('div');
-                noFlagsEl.className = 'red-flag-item';
-                noFlagsEl.style.borderLeftColor = '#00C853';
-                noFlagsEl.innerHTML = `
-                    <svg class="icon red-flag-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 12L11 14L15 10" stroke="#00C853" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="12" r="10" stroke="#00C853" stroke-width="2"/>
-                    </svg>
-                    <strong>Hakuna red flags zimeonekana / No red flags detected</strong>
-                `;
-                redFlagsContainer.appendChild(noFlagsEl);
+                elements.emptyFindings.textContent = meta.empty;
             }
 
-            // Display verdict
-            document.getElementById('verdictText').textContent = analysis.verdict;
-
-            // Show TTS button
-            document.getElementById('ttsBtn').style.display = 'block';
-
-            // Show danger warning if high risk
-            const dangerWarning = document.getElementById('danger-warning');
-            if (analysis.riskLevel === 'danger') {
-                dangerWarning.classList.add('active');
-                document.body.style.animation = 'dangerPulse 2s ease 1';
-                setTimeout(() => document.body.style.animation = '', 2000);
-                
-                // Setup anonymous reporting checkbox
-                const checkbox = document.getElementById('anonymous-report-checkbox');
-                const confirmation = document.getElementById('report-confirmation');
-                
-                // Reset checkbox state
-                checkbox.checked = false;
-                confirmation.style.display = 'none';
-                
-                // Remove any existing event listeners by cloning
-                const newCheckbox = checkbox.cloneNode(true);
-                checkbox.parentNode.replaceChild(newCheckbox, checkbox);
-                
-                // Add new event listener
-                newCheckbox.addEventListener('change', async function() {
-                    if (this.checked) {
-                        // Disable checkbox while submitting
-                        this.disabled = true;
-                        
-                        // Submit anonymous report
-                        const success = await submitAnonymousReport(analysis);
-                        
-                        if (success) {
-                            // Show confirmation message
-                            confirmation.style.display = 'block';
-                            confirmation.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        } else {
-                            // Re-enable checkbox on failure
-                            this.checked = false;
-                            this.disabled = false;
-                            alert('Failed to submit report. Please try again.');
-                        }
-                    }
-                });
-            } else {
-                dangerWarning.classList.remove('active');
-            }
-
-            // Safe glow effect
-            if (analysis.score === 0) {
-                scoreCircle.style.animation = 'countUp 1.5s ease, safeGlow 2s ease 1';
-            }
-
-            // Scroll to results
-            results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            elements.reportButton.classList.toggle('show', analysis.riskLevel !== 'safe');
+            elements.ttsButton.classList.add('show');
+            elements.resetButton.classList.add('show');
+            resetReportNotice();
+            elements.resultPanel.classList.add('active');
+            elements.loading.classList.remove('active');
+            elements.verifyBtn.disabled = false;
+            elements.resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Text-to-Speech Functionality using IBM Watson TTS
-        async function speakVerdict() {
-            const text = document.getElementById('verdictText').innerText;
-            const ttsBtn = document.getElementById('ttsBtn');
-            const originalText = ttsBtn.innerHTML;
-            
-            // Show loading state
-            ttsBtn.innerHTML = '<svg class="icon spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-dasharray="60" stroke-dashoffset="0"/></svg> Loading...';
-            ttsBtn.disabled = true;
-            
-            const apiKey = IBM_TTS_API_KEY;
-            const url = IBM_TTS_URL + '/v1/synthesize?voice=en-US_AllisonV3Voice';
-            
+        async function speakResult() {
+            if (!state.currentAnalysis) return;
+
+            const meta = verdictMeta[state.currentAnalysis.riskLevel];
+            const findingsText = state.currentAnalysis.findings.length
+                ? 'Findings: ' + state.currentAnalysis.findings.join(' ')
+                : meta.empty;
+            const spokenText = meta.badge + '. ' + meta.message + ' ' + findingsText;
+
+            elements.ttsButton.disabled = true;
+            elements.ttsButton.innerHTML = '<span class="spinner" aria-hidden="true"></span>Preparing audio';
+
             try {
-                const response = await fetch(url, {
+                if (typeof IBM_TTS_API_KEY !== 'undefined' && typeof IBM_TTS_URL !== 'undefined' && IBM_TTS_API_KEY && IBM_TTS_URL) {
+                    const response = await fetch(IBM_TTS_URL + '/v1/synthesize?voice=en-US_AllisonV3Voice', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Basic ' + btoa('apikey:' + IBM_TTS_API_KEY),
+                            'Content-Type': 'application/json',
+                            'Accept': 'audio/mp3'
+                        },
+                        body: JSON.stringify({ text: spokenText })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('TTS request failed: ' + response.status);
+                    }
+
+                    const blob = await response.blob();
+                    const audio = new Audio(URL.createObjectURL(blob));
+                    await audio.play();
+                } else if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(spokenText));
+                }
+            } catch (error) {
+                console.error('TTS error:', error);
+            } finally {
+                elements.ttsButton.disabled = false;
+                elements.ttsButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 11.995C17.0039 13.3208 16.4774 14.5924 15.54 15.53" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Listen to this result';
+            }
+        }
+
+        async function submitAnonymousReport(analysis) {
+            if (typeof CLOUDANT_URL === 'undefined' || typeof CLOUDANT_API_KEY === 'undefined' || typeof CLOUDANT_DATABASE === 'undefined' || !CLOUDANT_URL || !CLOUDANT_API_KEY || !CLOUDANT_DATABASE) {
+                return { ok: false, message: 'Reporting is not configured on this device yet, so nothing was sent.' };
+            }
+
+            try {
+                const response = await fetch(CLOUDANT_URL + '/' + CLOUDANT_DATABASE, {
                     method: 'POST',
                     headers: {
-                        'Authorization': 'Basic ' + btoa('apikey:' + apiKey),
                         'Content-Type': 'application/json',
-                        'Accept': 'audio/mp3'
+                        'Authorization': 'Bearer ' + CLOUDANT_API_KEY
                     },
-                    body: JSON.stringify({ text: text })
+                    body: JSON.stringify({
+                        risk_level: analysis.riskLevel,
+                        detected_patterns: analysis.findings,
+                        timestamp: new Date().toISOString(),
+                        country: 'Kenya'
+                    })
                 });
-                
-                if (!response.ok) throw new Error('TTS failed');
-                
-                const blob = await response.blob();
-                const audio = new Audio(URL.createObjectURL(blob));
-                
-                // Reset button when audio starts playing
-                audio.addEventListener('play', () => {
-                    ttsBtn.innerHTML = originalText;
-                    ttsBtn.disabled = false;
-                });
-                
-                // Reset button if audio fails
-                audio.addEventListener('error', () => {
-                    ttsBtn.innerHTML = originalText;
-                    ttsBtn.disabled = false;
-                });
-                
-                audio.play();
+
+                if (!response.ok) {
+                    throw new Error('Cloudant request failed: ' + response.status);
+                }
+
+                return { ok: true, message: 'Thank you. Your report was shared anonymously.' };
             } catch (error) {
-                console.error('TTS Error:', error);
-                // Fallback to browser TTS
-                window.speechSynthesis.cancel();
-                const msg = new SpeechSynthesisUtterance(text);
-                window.speechSynthesis.speak(msg);
-                
-                // Reset button
-                ttsBtn.innerHTML = originalText;
-                ttsBtn.disabled = false;
+                console.error('Report submission error:', error);
+                return { ok: false, message: 'We could not send the report right now. Please try again in a moment.' };
             }
         }
 
-        // Share Functionality
-        document.getElementById('share-btn').addEventListener('click', async () => {
-            if (!currentAnalysis) return;
-
-            const shareText = `THIBITISHA RESULT
-
-Score: ${currentAnalysis.score}/10
-Risk: ${currentAnalysis.riskLabel}
-
-${currentAnalysis.flags.length > 0 ? 'RED FLAGS:\n' + currentAnalysis.flags.map((f, i) => `${i + 1}. ${f.flag}`).join('\n') : 'No red flags detected'}
-
-VERDICT:
-${currentAnalysis.verdict}
-
----
-Verify job adverts at: thibitisha.app
-Protect yourself from scams & trafficking.`;
-
-            // Try native share first
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Thibitisha Result',
-                        text: shareText
-                    });
-                    return;
-                } catch (err) {
-                    // Fall through to clipboard
-                }
-            }
-
-            // Fallback to clipboard
-            try {
-                await navigator.clipboard.writeText(shareText);
-                const btn = document.getElementById('share-btn');
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = `
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Copied!
-                `;
-                setTimeout(() => btn.innerHTML = originalHTML, 2000);
-            } catch (err) {
-                alert('Copy this text:\n\n' + shareText);
-            }
-        });
-
-        // Reset
-        document.getElementById('reset-btn').addEventListener('click', () => {
-            // Stop any playing speech
-            window.speechSynthesis.cancel();
-            
-            results.classList.remove('active');
-            loading.classList.remove('active');
-            jobText.value = '';
-            fileInput.value = '';
-            fileInfo.style.display = 'none';
-            document.getElementById('extracted-text').classList.remove('active');
-            extractedText = '';
-            currentAnalysis = null;
-            nluEnhanced = false;
+        function resetScanner() {
+            state.currentAnalysis = null;
+            state.currentFile = null;
+            state.extractedText = '';
+            elements.jobText.value = '';
+            elements.fileInput.value = '';
+            updateFilePill(null);
+            elements.extractedPreview.textContent = 'Once your image is read, the extracted text will be used automatically for verification.';
+            elements.resultPanel.classList.remove('active');
+            elements.ttsButton.classList.remove('show');
+            elements.reportButton.classList.remove('show');
+            elements.resetButton.classList.remove('show');
+            elements.loading.classList.remove('active');
             clearErrors();
-            
-            // Hide TTS button
-            document.getElementById('ttsBtn').style.display = 'none';
-            
+            resetReportNotice();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        }
 
-        // Main Verify Function
-        verifyBtn.addEventListener('click', async () => {
-            // Check usage limit
-            if (usageCount >= 10) {
-                usageLimit.classList.add('active');
-                usageLimit.scrollIntoView({ behavior: 'smooth' });
-                return;
+        function addChatBubble(role, text) {
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble ' + role;
+            bubble.textContent = text;
+            elements.chatMessages.appendChild(bubble);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        async function analyzeChatContext(text) {
+            if (typeof IBM_NLU_CONFIG === 'undefined' || !IBM_NLU_CONFIG || !IBM_NLU_CONFIG.apiKey || !IBM_NLU_CONFIG.url) {
+                return null;
             }
 
+            try {
+                const response = await fetch(IBM_NLU_CONFIG.url + '/v1/analyze?version=' + (IBM_NLU_CONFIG.version || '2022-04-07'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + btoa('apikey:' + IBM_NLU_CONFIG.apiKey)
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        features: {
+                            sentiment: {},
+                            emotion: {},
+                            keywords: { limit: 6 }
+                        },
+                        language: 'en'
+                    })
+                });
+
+                if (!response.ok) throw new Error('NLU chat request failed: ' + response.status);
+                return await response.json();
+            } catch (error) {
+                console.error('Chat NLU error:', error);
+                return null;
+            }
+        }
+
+        function buildChatResponse(message, nlu) {
+            const lower = message.toLowerCase();
+            const fear = nlu && nlu.emotion && nlu.emotion.document ? nlu.emotion.document.emotion.fear || 0 : 0;
+
+            if (/pay|fee|deposit|registration|visa|medical|clearance/.test(lower)) {
+                return 'A payment request is a strong warning sign. Genuine employers do not ask you to send money before a verified hiring process. Pause, verify the organisation independently, and keep screenshots if you need to report it.';
+            }
+            if (/report|where do i report|who do i tell|dci/.test(lower)) {
+                return 'If the advert looks suspicious, keep screenshots, phone numbers, and payment details, then use the Report scam button after a caution or dangerous result. You can also contact official investigators or relevant labour and recruitment authorities.';
+            }
+            if (/whatsapp|telegram|dm|inbox/.test(lower)) {
+                return 'Scammers often move conversations to WhatsApp or Telegram quickly so they can avoid official channels. Ask for a company email, website, office address, and a verifiable contact before sharing anything personal.';
+            }
+            if (/overseas|abroad|dubai|qatar|saudi|middle east/.test(lower)) {
+                return 'Overseas adverts need extra care. Verify the recruiting agency through official channels, ask for a written contract, and never pay for placement, travel, or visa promises before you confirm the process is legitimate.';
+            }
+            if (fear > 0.45) {
+                return 'It is completely okay to slow down when something feels off. You are not overreacting by checking first. If you want, paste the advert into the verifier above and Thibitisha will walk through the warning signs with you.';
+            }
+            return 'A safe next step is to check the advert for money requests, pressure tactics, missing company details, and early requests for documents. If you want a verdict on a specific advert, paste it above or upload a screenshot.';
+        }
+
+        async function sendChatMessage() {
+            const message = elements.chatInput.value.trim();
+            if (!message) return;
+
+            addChatBubble('user', message);
+            elements.chatInput.value = '';
+            elements.chatSend.disabled = true;
+            elements.chatInput.disabled = true;
+
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'chat-bubble assistant';
+            loadingBubble.textContent = 'Thinking…';
+            elements.chatMessages.appendChild(loadingBubble);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+
+            try {
+                const nlu = await analyzeChatContext(message);
+                loadingBubble.remove();
+                addChatBubble('assistant', buildChatResponse(message, nlu));
+            } catch (error) {
+                console.error('Chat message error:', error);
+                loadingBubble.remove();
+                addChatBubble('assistant', 'Something went wrong while preparing a reply. Please try again, or use the verifier above for a direct verdict.');
+            } finally {
+                elements.chatSend.disabled = false;
+                elements.chatInput.disabled = false;
+                elements.chatInput.focus();
+            }
+        }
+
+        async function verifyCurrentInput() {
             clearErrors();
-            
+            resetReportNotice();
             let textToAnalyze = '';
 
-            if (currentTab === 'text') {
-                textToAnalyze = jobText.value.trim();
-                
-                if (textToAnalyze.length === 0) {
-                    showError('text', 'Weka maandishi kwanza / Please add text first');
+            if (state.currentTab === 'text') {
+                textToAnalyze = elements.jobText.value.trim();
+                if (!textToAnalyze) {
+                    showError('text', 'Please paste the job advert text you want to verify.');
                     return;
                 }
-                
                 if (textToAnalyze.length < 20) {
-                    showError('text', 'Maandishi ni mafupi sana. Weka zaidi / Text too short. Add more');
+                    showError('text', 'Please paste a bit more of the advert so Thibitisha has enough to review.');
                     return;
                 }
             } else {
-                // Check if a file has been selected
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    showError('image', 'Pakia picha kwanza / Upload an image first');
+                if (!state.currentFile) {
+                    showError('image', 'Please upload a screenshot to continue.');
                     return;
                 }
-                
-                // Check if text was successfully extracted
-                if (!extractedText || extractedText.length < 20) {
-                    showError('image', 'Maandishi hayaonekani vizuri. Jaribu picha nyingine / Text not clear. Try another image');
+                if (!state.extractedText || state.extractedText.length < 20) {
+                    showError('image', 'Please use a clearer screenshot so Thibitisha can read enough text to verify it.');
                     return;
                 }
-                textToAnalyze = extractedText;
+                textToAnalyze = state.extractedText;
             }
 
-            // Pulse shield animation
-            const shieldIcon = verifyBtn.querySelector('.shield-icon');
-            shieldIcon.classList.add('pulse');
-            setTimeout(() => shieldIcon.classList.remove('pulse'), 1500);
-
-            // Show loading after pulse
-            setTimeout(async () => {
-                loading.classList.add('active');
-                verifyBtn.disabled = true;
-
-                // Run analysis (includes NLU if configured)
-                try {
-                    const analysis = await analyzeJobAdvert(textToAnalyze);
-                    displayResults(analysis);
-                    
-                    // Increment usage
-                    usageCount++;
-                    sessionStorage.setItem('thibitisha_usage', usageCount.toString());
-                    
-                    verifyBtn.disabled = false;
-                } catch (error) {
-                    console.error('Analysis error:', error);
-                    showError(currentTab, 'Kuna tatizo. Jaribu tena / Something went wrong. Try again');
-                    loading.classList.remove('active');
-                    verifyBtn.disabled = false;
-                }
-            }, 1500);
-        });
-    </script>
-    
-    <!-- AI Chat Functionality -->
-    <script>
-        // AI Chat Functions
-        function openAIChat() {
-            document.getElementById('ai-chat-modal').classList.add('active');
-            document.getElementById('ai-chat-input').focus();
-        }
-
-        function closeAIChat() {
-            document.getElementById('ai-chat-modal').classList.remove('active');
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('ai-chat-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeAIChat();
-            }
-        });
-
-        async function sendAIMessage() {
-            const input = document.getElementById('ai-chat-input');
-            const sendBtn = document.getElementById('ai-chat-send');
-            const messagesContainer = document.getElementById('ai-chat-messages');
-            const userMessage = input.value.trim();
-
-            if (!userMessage) return;
-
-            // Disable input
-            input.disabled = true;
-            sendBtn.disabled = true;
-
-            // Add user message
-            const userMsgDiv = document.createElement('div');
-            userMsgDiv.className = 'ai-message user';
-            userMsgDiv.textContent = userMessage;
-            messagesContainer.appendChild(userMsgDiv);
-
-            // Clear input
-            input.value = '';
-
-            // Add loading indicator
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'ai-message assistant';
-            loadingDiv.innerHTML = '<div class="ai-message-loading"><span></span><span></span><span></span></div>';
-            messagesContainer.appendChild(loadingDiv);
-
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            elements.resultPanel.classList.remove('active');
+            elements.loading.classList.add('active');
+            elements.verifyBtn.disabled = true;
 
             try {
-                // Call IBM Watson NLU
-                const analysis = await analyzeWithWatsonNLU(userMessage);
-                
-                // Remove loading
-                loadingDiv.remove();
-
-                // Generate AI response based on NLU analysis
-                const response = generateAIResponse(userMessage, analysis);
-                
-                // Add AI response
-                const aiMsgDiv = document.createElement('div');
-                aiMsgDiv.className = `ai-message assistant ${response.type}`;
-                aiMsgDiv.innerHTML = response.message;
-                messagesContainer.appendChild(aiMsgDiv);
-
+                const analysis = await analyzeJobAdvert(textToAnalyze);
+                displayResults(analysis);
             } catch (error) {
-                console.error('AI Chat Error:', error);
-                loadingDiv.remove();
-                
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'ai-message assistant';
-                errorDiv.innerHTML = '<strong>⚠️ Error</strong><br>Sorry, I encountered an issue. Please try again or use the main verification tool above.';
-                messagesContainer.appendChild(errorDiv);
+                console.error('Verification error:', error);
+                elements.loading.classList.remove('active');
+                elements.verifyBtn.disabled = false;
+                showError(state.currentTab, 'Something went wrong while checking this advert. Please try again.');
             }
-
-            // Re-enable input
-            input.disabled = false;
-            sendBtn.disabled = false;
-            input.focus();
-
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        async function analyzeWithWatsonNLU(text) {
-            if (typeof IBM_NLU_CONFIG === 'undefined') {
-                throw new Error('IBM NLU not configured');
+        elements.tabs.forEach(button => {
+            button.addEventListener('click', () => setTab(button.dataset.tab));
+        });
+
+        elements.uploadArea.addEventListener('click', () => elements.fileInput.click());
+        elements.uploadArea.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                elements.fileInput.click();
             }
+        });
+        elements.uploadArea.addEventListener('dragover', event => {
+            event.preventDefault();
+            elements.uploadArea.classList.add('dragover');
+        });
+        elements.uploadArea.addEventListener('dragleave', () => {
+            elements.uploadArea.classList.remove('dragover');
+        });
+        elements.uploadArea.addEventListener('drop', event => {
+            event.preventDefault();
+            elements.uploadArea.classList.remove('dragover');
+            handleFileUpload(event.dataTransfer.files[0]);
+        });
+        elements.fileInput.addEventListener('change', event => handleFileUpload(event.target.files[0]));
+        elements.verifyBtn.addEventListener('click', verifyCurrentInput);
+        elements.ttsButton.addEventListener('click', speakResult);
+        elements.resetButton.addEventListener('click', resetScanner);
+        elements.reportButton.addEventListener('click', async () => {
+            if (!state.currentAnalysis || state.currentAnalysis.riskLevel === 'safe') return;
+            elements.reportButton.disabled = true;
+            const result = await submitAnonymousReport(state.currentAnalysis);
+            elements.reportConfirmationText.textContent = result.message;
+            elements.reportConfirmation.classList.add('active');
+            elements.reportButton.disabled = false;
+        });
 
-            const response = await fetch(`${IBM_NLU_CONFIG.url}/v1/analyze?version=${IBM_NLU_CONFIG.version}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Basic ' + btoa('apikey:' + IBM_NLU_CONFIG.apiKey)
-                },
-                body: JSON.stringify({
-                    text: text,
-                    features: {
-                        sentiment: {},
-                        emotion: {},
-                        keywords: {
-                            limit: 10
-                        },
-                        entities: {
-                            limit: 10
-                        }
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('NLU API error');
+        elements.chatFab.addEventListener('click', () => {
+            elements.chatModal.classList.add('active');
+            elements.chatInput.focus();
+        });
+        elements.chatClose.addEventListener('click', () => elements.chatModal.classList.remove('active'));
+        elements.chatModal.addEventListener('click', event => {
+            if (event.target === elements.chatModal) {
+                elements.chatModal.classList.remove('active');
             }
-
-            return await response.json();
-        }
-
-        function generateAIResponse(userMessage, analysis) {
-            const lowerMsg = userMessage.toLowerCase();
-            
-            // Scam-related keywords
-            const scamKeywords = ['scam', 'fake', 'fraud', 'suspicious', 'ulaghai', 'danganya'];
-            const jobKeywords = ['job', 'kazi', 'employment', 'work', 'offer'];
-            const paymentKeywords = ['pay', 'money', 'fee', 'pesa', 'malipo', 'training fee'];
-            
-            const hasScamKeyword = scamKeywords.some(k => lowerMsg.includes(k));
-            const hasJobKeyword = jobKeywords.some(k => lowerMsg.includes(k));
-            const hasPaymentKeyword = paymentKeywords.some(k => lowerMsg.includes(k));
-
-            // Analyze sentiment
-            const sentiment = analysis.sentiment?.document?.label || 'neutral';
-            const sentimentScore = analysis.sentiment?.document?.score || 0;
-
-            // Check for negative emotions
-            const emotions = analysis.emotion?.document?.emotion || {};
-            const hasFear = emotions.fear > 0.5;
-            const hasSadness = emotions.sadness > 0.5;
-
-            let response = '';
-            let type = 'safe';
-
-            // Generate contextual response
-            if (hasPaymentKeyword || lowerMsg.includes('should i pay')) {
-                type = 'warning';
-                response = `<strong>🚨 RED FLAG: Payment Requests</strong><br><br>
-                    <strong>NEVER pay for:</strong><br>
-                    • Job applications or "processing fees"<br>
-                    • Training before employment<br>
-                    • Visa processing by recruiters<br>
-                    • Background checks<br><br>
-                    <strong>Legitimate employers:</strong><br>
-                    ✅ Pay YOU, not the other way around<br>
-                    ✅ Cover training costs<br>
-                    ✅ Handle visa fees directly<br><br>
-                    <em>If someone asks for money upfront, it's likely a SCAM!</em>`;
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                elements.chatModal.classList.remove('active');
             }
-            else if (hasScamKeyword && hasJobKeyword) {
-                type = 'warning';
-                response = `<strong>🛡️ Job Scam Red Flags</strong><br><br>
-                    Watch out for these warning signs:<br><br>
-                    🚩 Upfront payment requests<br>
-                    🚩 Too-good-to-be-true salaries<br>
-                    🚩 Vague job descriptions<br>
-                    🚩 Pressure to decide quickly<br>
-                    🚩 Poor grammar in communications<br>
-                    🚩 Unverifiable company details<br>
-                    🚩 Interviews via WhatsApp only<br><br>
-                    <strong>Use the main tool above to verify specific job adverts!</strong>`;
+        });
+        elements.chatSend.addEventListener('click', sendChatMessage);
+        elements.chatInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendChatMessage();
             }
-            else if (lowerMsg.includes('legitimate') || lowerMsg.includes('real') || lowerMsg.includes('safe')) {
-                type = 'safe';
-                response = `<strong>✅ How to Verify Legitimacy</strong><br><br>
-                    <strong>Check these:</strong><br>
-                    1. Company website (look for HTTPS, contact info)<br>
-                    2. Physical office address (verify on Google Maps)<br>
-                    3. Company registration (check with relevant authorities)<br>
-                    4. Online reviews and reputation<br>
-                    5. Social media presence (active, professional)<br><br>
-                    <strong>Trust your instincts!</strong> If something feels off, it probably is.<br><br>
-                    💡 <em>Paste the job advert in the main tool above for AI analysis!</em>`;
-            }
-            else if (lowerMsg.includes('overseas') || lowerMsg.includes('abroad') || lowerMsg.includes('dubai') || lowerMsg.includes('saudi')) {
-                type = 'warning';
-                response = `<strong>⚠️ Overseas Job Offers</strong><br><br>
-                    <strong>Extra caution needed!</strong><br><br>
-                    Verify:<br>
-                    • Licensed recruitment agency<br>
-                    • Valid work permit/visa process<br>
-                    • Employment contract in writing<br>
-                    • Salary and benefits clearly stated<br>
-                    • Return ticket provisions<br><br>
-                    <strong>WARNING SIGNS:</strong><br>
-                    🚨 Confiscating your passport<br>
-                    🚨 Different job than promised<br>
-                    🚨 Withholding salary<br>
-                    🚨 No written contract<br><br>
-                    <em>Many trafficking cases start with fake overseas jobs!</em>`;
-            }
-            else if (sentiment === 'negative' || hasFear || hasSadness) {
-                type = 'warning';
-                response = `<strong>🤝 I'm Here to Help</strong><br><br>
-                    I sense you might be concerned or worried. That's completely understandable when dealing with job offers.<br><br>
-                    <strong>Remember:</strong><br>
-                    • You have the right to ask questions<br>
-                    • Take your time to verify<br>
-                    • Don't let anyone pressure you<br>
-                    • Trust your gut feeling<br><br>
-                    If something doesn't feel right, use the verification tool above or ask me specific questions about red flags.`;
-            }
-            else {
-                // General helpful response
-                response = `<strong>💡 How Can I Help?</strong><br><br>
-                    I can help you with:<br><br>
-                    🔍 Identifying scam red flags<br>
-                    ✅ Verifying job offer legitimacy<br>
-                    🛡️ Staying safe from fraud<br>
-                    📋 Understanding your rights<br><br>
-                    <strong>Try asking:</strong><br>
-                    • "What are common job scam tactics?"<br>
-                    • "Should I pay for job training?"<br>
-                    • "How do I verify a company?"<br><br>
-                    Or use the main verification tool above to analyze a specific job advert!`;
-            }
+        });
 
-            return { message: response, type: type };
-        }
+        setTab('text');
     </script>
 </body>
 </html>
